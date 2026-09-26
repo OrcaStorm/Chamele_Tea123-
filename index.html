@@ -1,0 +1,2847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chamele-Tea | Color Your Boba Experience</title>
+  
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="Order online from Chamele-Tea. Customizable bubble tea with fresh ingredients. Choose your sweetness, ice, and toppings. Pickup available." />
+  <meta name="keywords" content="bubble tea, boba, milk tea, fruit tea, online ordering, customizable drinks" />
+  <meta name="author" content="Chamele-Tea" />
+  <meta name="robots" content="index, follow" />
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://your-domain.com/" />
+  <meta property="og:title" content="Chamele-Tea | Color Your Boba Experience" />
+  <meta property="og:description" content="Customizable bubble tea with fresh ingredients. Order online for pickup!" />
+  <meta property="og:image" content="https://your-domain.com/preview.jpg" />
+  
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image" />
+  <meta property="twitter:url" content="https://your-domain.com/" />
+  <meta property="twitter:title" content="Chamele-Tea | Color Your Boba Experience" />
+  <meta property="twitter:description" content="Customizable bubble tea with fresh ingredients. Order online for pickup!" />
+  <meta property="twitter:image" content="https://your-domain.com/preview.jpg" />
+  
+  <!-- Favicon (Update with your own) -->
+  <link rel="icon" type="image/png" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧋</text></svg>" />
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- React & ReactDOM CDN -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <!-- Canvas Confetti CDN for order completion -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <!-- Google Sheets API -->
+  <script src="https://apis.google.com/js/api.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          colors: {
+            chameleon: {
+              emerald: '#10B981',
+              teal: '#14B8A6',
+              purple: '#8B5CF6',
+              pink: '#EC4899',
+              dark: '#0F172A',
+            }
+          },
+          animation: {
+            'gradient-x': 'gradient-x 6s ease infinite',
+            'bounce-subtle': 'bounce-subtle 2s ease-in-out infinite',
+          },
+          keyframes: {
+            'gradient-x': {
+              '0%, 100%': { 'background-size': '200% 200%', 'background-position': 'left center' },
+              '50%': { 'background-size': '200% 200%', 'background-position': 'right center' },
+            },
+            'bounce-subtle': {
+              '0%, 100%': { transform: 'translateY(-3%)' },
+              '50%': { transform: 'translateY(0)' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Custom scrollbar for clean mobile experience */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    .hide-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .hide-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased selection:bg-teal-500 selection:text-white min-h-screen">
+
+  <div id="root"></div>
+
+  <script type="text/babel">
+
+    // Sample Menu Data with customizable options
+    const INITIAL_MENU = [
+      {
+        id: 'm1',
+        name: 'Chameleon Signature Brown Sugar',
+        category: 'Milk Teas',
+        price: 6.25,
+        rating: '4.9',
+        popular: true,
+        image: 'https://images.unsplash.com/photo-1558857563-b371033873b8?auto=format&fit=crop&w=600&q=80',
+        description: 'Rich black tea, creamy oat milk, caramelized brown sugar pearls, and a velvety salted cheese foam topping.',
+        badge: 'Best Seller'
+      },
+      {
+        id: 'm2',
+        name: 'Hue Shift Matcha Taro',
+        category: 'Milk Teas',
+        price: 6.50,
+        rating: '4.8',
+        popular: true,
+        image: 'https://images.unsplash.com/photo-1536256263959-770b48d82b0a?auto=format&fit=crop&w=600&q=80',
+        description: 'Layered organic Uji matcha with slow-cooked sweet purple taro paste and fresh milk.',
+        badge: 'Staff Favorite'
+      },
+      {
+        id: 'm3',
+        name: 'Prism Passion Fruit Oolong',
+        category: 'Fruit Teas',
+        price: 5.95,
+        rating: '4.7',
+        popular: false,
+        image: 'https://images.unsplash.com/photo-1544787219-7f47ccb76574?auto=format&fit=crop&w=600&q=80',
+        description: 'Fragrant Four Seasons Oolong infused with real passion fruit, guava seeds, and crystal jelly boba.',
+        badge: 'Refreshing'
+      },
+      {
+        id: 'm4',
+        name: 'Karma Camou-Flage Jasmine',
+        category: 'Fruit Teas',
+        price: 6.10,
+        rating: '4.9',
+        popular: true,
+        image: 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&w=600&q=80',
+        description: 'Freshly brewed Jasmine green tea layered with crushed lychee fruit and blue butterfly pea floral layer.',
+        badge: 'Color Shifter'
+      },
+      {
+        id: 'm5',
+        name: 'Sticky Tongue Mango Slush',
+        category: 'Slush & Ice',
+        price: 6.75,
+        rating: '4.8',
+        popular: false,
+        image: 'https://images.unsplash.com/photo-1572490122747-3968b75cc699?auto=format&fit=crop&w=600&q=80',
+        description: 'Real Kensington Pride mango blended slush, topped with mango popping boba and chili-chamoy drizzle.',
+        badge: 'Seasonal'
+      },
+      {
+        id: 'm6',
+        name: 'Spectrum Thai Spice Milk Tea',
+        category: 'Milk Teas',
+        price: 5.80,
+        rating: '4.6',
+        popular: false,
+        image: 'https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=600&q=80',
+        description: 'Authentic brewed Thai tea leaves with condensed milk and chewy dark tapioca boba.',
+        badge: 'Classic'
+      }
+    ];
+
+    const SWEETNESS_OPTIONS = ['0%', '30%', '50%', '70%', '100%'];
+    const ICE_OPTIONS = ['No Ice', 'Less Ice', 'Regular Ice', 'Extra Ice'];
+    const TOPPING_OPTIONS = [
+      { name: 'Brown Sugar Pearls', price: 0.75 },
+      { name: 'Crystal Boba', price: 0.85 },
+      { name: 'Mango Popping Boba', price: 0.75 },
+      { name: 'Egg Pudding', price: 0.90 },
+      { name: 'Salted Cheese Foam', price: 1.00 },
+      { name: 'Taro Jelly', price: 0.75 }
+    ];
+
+    // Pre-populated initial orders for Owner Dashboard demonstration
+    const INITIAL_ORDERS = [
+      {
+        id: 'CT-8042',
+        customerName: 'Aria Chen',
+        phone: '555-0192',
+        items: [
+          { name: 'Chameleon Signature Brown Sugar', size: 'Large', sweetness: '50%', ice: 'Less Ice', toppings: ['Brown Sugar Pearls', 'Salted Cheese Foam'], price: 8.00, qty: 1 }
+        ],
+        total: 8.00,
+        type: 'Pickup',
+        status: 'Preparing',
+        time: '10 mins ago',
+        notes: 'Extra napkin please!'
+      },
+      {
+        id: 'CT-8041',
+        customerName: 'Marcus Vance',
+        phone: '555-0144',
+        items: [
+          { name: 'Hue Shift Matcha Taro', size: 'Regular', sweetness: '70%', ice: 'Regular Ice', toppings: ['Crystal Boba'], price: 7.35, qty: 2 }
+        ],
+        total: 14.70,
+        type: 'Dine-In',
+        status: 'Ready',
+        time: '22 mins ago',
+        notes: ''
+      },
+      {
+        id: 'CT-8040',
+        customerName: 'Sarah Jenkins',
+        phone: '555-0831',
+        items: [
+          { name: 'Prism Passion Fruit Oolong', size: 'Large', sweetness: '30%', ice: 'No Ice', toppings: ['Mango Popping Boba'], price: 7.45, qty: 1 }
+        ],
+        total: 7.45,
+        type: 'Pickup',
+        status: 'Completed',
+        time: '45 mins ago',
+        notes: ''
+      }
+    ];
+
+    // Pre-populated customer reviews for feedback stream
+    const INITIAL_FEEDBACK = [
+      {
+        id: 'fb-1',
+        name: 'Jessica L.',
+        rating: 5,
+        date: 'Today, 11:20 AM',
+        category: 'Taste & Quality',
+        comment: 'Hands down the best brown sugar boba in the neighborhood! The boba was super fresh and warm. Kevin and team are always so welcoming.',
+        drink: 'Chameleon Signature Brown Sugar',
+        ownerResponse: {
+          date: 'Today, 11:45 AM',
+          comment: 'Thank you so much Jessica! We simmer our pearls in small batches throughout the day. Glad you loved it! - Kevin'
+        }
+      },
+      {
+        id: 'fb-2',
+        name: 'Devon K.',
+        rating: 5,
+        date: 'Yesterday',
+        category: 'Service',
+        comment: 'Love the chameleon theme! The passion fruit oolong is crisp and not overly sweet when you order 30% sugar. Will definitely be back!',
+        drink: 'Prism Passion Fruit Oolong',
+        ownerResponse: null
+      },
+      {
+        id: 'fb-3',
+        name: 'Maya R.',
+        rating: 4,
+        date: '2 days ago',
+        category: 'Atmosphere',
+        comment: 'Super cute shop layout! Would love to see more seating for study sessions, but the drinks are incredible!',
+        drink: 'Hue Shift Matcha Taro',
+        ownerResponse: {
+          date: '1 day ago',
+          comment: 'Thanks for the feedback Maya! We are currently looking at adding a couple more high-top stools by the front window next month. Stay tuned!'
+        }
+      }
+    ];
+
+    const ChameleonMascot = ({ className = "w-10 h-10", mood = "happy" }) => (
+      <svg className={className} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="46" fill="url(#cham-grad)" />
+        {/* Curved Tail */}
+        <path d="M 22 70 Q 12 70 12 58 Q 12 48 24 50 Q 28 51 25 56" stroke="#064E3B" strokeWidth="4" strokeLinecap="round" fill="none" />
+        {/* Chameleon Body */}
+        <path d="M 28 65 Q 40 30 70 38 Q 80 42 82 58 Q 82 72 65 72 Q 40 73 28 65 Z" fill="#10B981" />
+        {/* Underbelly Accent */}
+        <path d="M 36 64 Q 50 72 66 66 Q 60 58 36 64 Z" fill="#FACC15" />
+        {/* Large Chameleon Eyes with big pupils */}
+        <circle cx="68" cy="46" r="11" fill="#FFFFFF" />
+        <circle cx="70" cy="46" r="5" fill="#0F172A" />
+        <circle cx="72" cy="44" r="2" fill="#FFFFFF" />
+        {/* Cute Crest / Spikes */}
+        <path d="M 40 38 L 43 32 L 48 37 L 52 30 L 57 37 L 62 31 L 65 39" stroke="#34D399" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+        {/* Smile */}
+        <path d="M 72 58 Q 76 62 80 57" stroke="#064E3B" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+        {/* Mini Boba Cup in Hand */}
+        <rect x="52" y="58" width="12" height="16" rx="2" fill="#F3E8FF" stroke="#7C3AED" strokeWidth="1.5" />
+        <path d="M 58 52 L 58 58" stroke="#EC4899" strokeWidth="2" strokeLinecap="round" />
+        <circle cx="56" cy="69" r="1.5" fill="#4C1D95" />
+        <circle cx="60" cy="70" r="1.5" fill="#4C1D95" />
+        <defs>
+          <linearGradient id="cham-grad" x1="0" y1="0" x2="100" y2="100">
+            <stop offset="0%" stopColor="#10B981" />
+            <stop offset="50%" stopColor="#14B8A6" />
+            <stop offset="100%" stopColor="#8B5CF6" />
+          </linearGradient>
+        </defs>
+      </svg>
+    );
+
+    function App() {
+      // Navigation state
+      const [activeTab, setActiveTab] = useState('home'); // 'home', 'menu', 'feedback', 'owner', 'offers'
+      const [selectedCategory, setSelectedCategory] = useState('All');
+      
+      // Order / Cart State
+      const [cart, setCart] = useState([]);
+      const [isCartOpen, setIsCartOpen] = useState(false);
+      const [customizingItem, setCustomizingItem] = useState(null);
+      const [orders, setOrders] = useState(() => {
+        const saved = localStorage.getItem('chameleaTea_orders');
+        return saved ? JSON.parse(saved) : INITIAL_ORDERS;
+      });
+      const [orderSuccess, setOrderSuccess] = useState(null);
+
+      // Feedback State
+      const [feedbacks, setFeedbacks] = useState(() => {
+        const saved = localStorage.getItem('chameleaTea_feedbacks');
+        return saved ? JSON.parse(saved) : INITIAL_FEEDBACK;
+      });
+      const [feedbackForm, setFeedbackForm] = useState({
+        name: '',
+        rating: 5,
+        category: 'Taste & Quality',
+        comment: '',
+        drink: 'Chameleon Signature Brown Sugar'
+      });
+      const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
+
+      // Owner Reply State
+      const [replyingFeedbackId, setReplyingFeedbackId] = useState(null);
+      const [replyText, setReplyText] = useState('');
+
+      // Ticket System State
+      const [tickets, setTickets] = useState(() => {
+        const saved = localStorage.getItem('chameleaTea_tickets');
+        return saved ? JSON.parse(saved) : [];
+      });
+      const [ticketForm, setTicketForm] = useState({
+        email: '',
+        phone: '',
+        firstName: '',
+        lastName: '',
+        type: 'Complaint',
+        message: ''
+      });
+      const [ticketSubmitted, setTicketSubmitted] = useState(false);
+      const [replyingTicketId, setReplyingTicketId] = useState(null);
+      const [ticketReplyText, setTicketReplyText] = useState('');
+
+      // Owner Auth State
+      const [isOwnerAuthenticated, setIsOwnerAuthenticated] = useState(false);
+      const [ownerPinInput, setOwnerPinInput] = useState('');
+      const [pinError, setPinError] = useState('');
+      const [ownerTab, setOwnerTab] = useState('orders'); // 'orders', 'feedback', 'stats', 'tickets'
+      const [loginAttempts, setLoginAttempts] = useState(0);
+      const [lockoutTime, setLockoutTime] = useState(null);
+
+      // Google Sheets Export State
+      const [isExporting, setIsExporting] = useState(false);
+      const [exportMessage, setExportMessage] = useState('');
+
+      // Session timeout - auto logout after 30 minutes of inactivity
+      useEffect(() => {
+        if (!isOwnerAuthenticated) return;
+
+        let timeout;
+        const resetTimeout = () => {
+          clearTimeout(timeout);
+          timeout = setTimeout(() => {
+            setIsOwnerAuthenticated(false);
+            alert('⏰ Session expired due to inactivity. Please login again.');
+          }, 30 * 60 * 1000); // 30 minutes
+        };
+
+        resetTimeout();
+        const events = ['mousemove', 'keypress', 'click', 'scroll'];
+        events.forEach(event => window.addEventListener(event, resetTimeout));
+
+        return () => {
+          clearTimeout(timeout);
+          events.forEach(event => window.removeEventListener(event, resetTimeout));
+        };
+      }, [isOwnerAuthenticated]);
+
+      // Privacy notice on first visit
+      useEffect(() => {
+        if (!localStorage.getItem('privacy_acknowledged')) {
+          alert('🔒 Privacy Notice: This system stores customer data locally in your browser. Please ensure you are on a secure, private device.');
+          localStorage.setItem('privacy_acknowledged', 'true');
+        }
+      }, []);
+
+      // Persist data to localStorage whenever it changes
+      useEffect(() => {
+        localStorage.setItem('chameleaTea_orders', JSON.stringify(orders));
+      }, [orders]);
+
+      useEffect(() => {
+        localStorage.setItem('chameleaTea_feedbacks', JSON.stringify(feedbacks));
+      }, [feedbacks]);
+
+      useEffect(() => {
+        localStorage.setItem('chameleaTea_tickets', JSON.stringify(tickets));
+      }, [tickets]);
+
+      // Customization Modal Temp State
+      const [currentOptions, setCurrentOptions] = useState({
+        size: 'Regular',
+        sweetness: '50%',
+        ice: 'Regular Ice',
+        toppings: [],
+        qty: 1
+      });
+
+      // Handle category filtering
+      const categories = ['All', 'Milk Teas', 'Fruit Teas', 'Slush & Ice'];
+      const filteredMenu = selectedCategory === 'All' 
+        ? INITIAL_MENU 
+        : INITIAL_MENU.filter(item => item.category === selectedCategory);
+
+      const handleOwnerSubmitReply = (feedbackId) => {
+        if (!replyText.trim()) return;
+
+        setFeedbacks(feedbacks.map(fb => {
+          if (fb.id === feedbackId) {
+            return {
+              ...fb,
+              ownerResponse: {
+                date: 'Just now',
+                comment: replyText.trim()
+              }
+            };
+          }
+          return fb;
+        }));
+
+        setReplyingFeedbackId(null);
+        setReplyText('');
+      };
+
+      const handleTicketSubmit = (e) => {
+        e.preventDefault();
+        
+        // Input validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(ticketForm.email)) {
+          alert('❌ Please enter a valid email address.');
+          return;
+        }
+        
+        const phoneRegex = /^[\d\s\-\(\)]+$/;
+        if (!phoneRegex.test(ticketForm.phone) || ticketForm.phone.replace(/\D/g, '').length < 10) {
+          alert('❌ Please enter a valid phone number (at least 10 digits).');
+          return;
+        }
+        
+        if (!ticketForm.message.trim() || ticketForm.message.trim().length < 10) {
+          alert('❌ Please provide a detailed message (at least 10 characters).');
+          return;
+        }
+
+        const newTicket = {
+          id: `TK-${Date.now()}`,
+          email: ticketForm.email.trim(),
+          phone: ticketForm.phone.trim(),
+          firstName: ticketForm.firstName.trim(),
+          lastName: ticketForm.lastName.trim(),
+          type: ticketForm.type,
+          message: ticketForm.message.trim(),
+          date: new Date().toLocaleString(),
+          status: 'Open',
+          ownerResponse: null
+        };
+
+        setTickets([newTicket, ...tickets]);
+        setTicketSubmitted(true);
+        setTicketForm({
+          email: '',
+          phone: '',
+          firstName: '',
+          lastName: '',
+          type: 'Complaint',
+          message: ''
+        });
+
+        setTimeout(() => setTicketSubmitted(false), 4000);
+      };
+
+      const handleTicketReply = (ticketId) => {
+        if (!ticketReplyText.trim()) return;
+
+        setTickets(tickets.map(ticket => {
+          if (ticket.id === ticketId) {
+            return {
+              ...ticket,
+              ownerResponse: {
+                date: new Date().toLocaleString(),
+                message: ticketReplyText.trim()
+              }
+            };
+          }
+          return ticket;
+        }));
+
+        setReplyingTicketId(null);
+        setTicketReplyText('');
+      };
+
+      const exportToGoogleSheets = async () => {
+        setIsExporting(true);
+        setExportMessage('Creating Google Sheet...');
+
+        try {
+          // Prepare data for Google Sheets
+          const dateStr = new Date().toLocaleDateString();
+          const timeStr = new Date().toLocaleTimeString();
+          
+          // Calculate summary data
+          const totalRevenue = orders.reduce((sum, o) => sum + o.total, 0);
+          const completedOrders = orders.filter(o => o.status === 'Completed').length;
+          const avgRating = feedbacks.length > 0 
+            ? (feedbacks.reduce((sum, fb) => sum + fb.rating, 0) / feedbacks.length).toFixed(2)
+            : '0';
+
+          // Create spreadsheet data structure
+          const sheetData = {
+            title: `Chamele-Tea Daily Report - ${dateStr}`,
+            sheets: [
+              {
+                properties: { title: 'Summary' },
+                data: [
+                  {
+                    startRow: 0,
+                    startColumn: 0,
+                    rowData: [
+                      { values: [{ userEnteredValue: { stringValue: 'CHAMELE-TEA DAILY REPORT' }, userEnteredFormat: { textFormat: { bold: true, fontSize: 16 } } }] },
+                      { values: [{ userEnteredValue: { stringValue: `Generated: ${dateStr} ${timeStr}` } }] },
+                      { values: [{ userEnteredValue: { stringValue: '' } }] },
+                      { values: [{ userEnteredValue: { stringValue: 'BUSINESS SUMMARY' }, userEnteredFormat: { textFormat: { bold: true, fontSize: 14 } } }] },
+                      { values: [{ userEnteredValue: { stringValue: 'Total Orders' } }, { userEnteredValue: { numberValue: orders.length } }] },
+                      { values: [{ userEnteredValue: { stringValue: 'Completed Orders' } }, { userEnteredValue: { numberValue: completedOrders } }] },
+                      { values: [{ userEnteredValue: { stringValue: 'Total Revenue' } }, { userEnteredValue: { stringValue: `$${totalRevenue.toFixed(2)}` } }] },
+                      { values: [{ userEnteredValue: { stringValue: 'Average Rating' } }, { userEnteredValue: { stringValue: `${avgRating} / 5.0` } }] },
+                      { values: [{ userEnteredValue: { stringValue: 'Total Feedback' } }, { userEnteredValue: { numberValue: feedbacks.length } }] },
+                      { values: [{ userEnteredValue: { stringValue: 'Total Tickets' } }, { userEnteredValue: { numberValue: tickets.length } }] },
+                      { values: [{ userEnteredValue: { stringValue: 'Open Tickets' } }, { userEnteredValue: { numberValue: tickets.filter(t => t.status === 'Open').length } }] },
+                    ]
+                  }
+                ]
+              },
+              {
+                properties: { title: 'Orders' },
+                data: [
+                  {
+                    startRow: 0,
+                    startColumn: 0,
+                    rowData: [
+                      {
+                        values: [
+                          { userEnteredValue: { stringValue: 'Order ID' }, userEnteredFormat: { textFormat: { bold: true } } },
+                          { userEnteredValue: { stringValue: 'Customer Name' }, userEnteredFormat: { textFormat: { bold: true } } },
+                          { userEnteredValue: { stringValue: 'Phone' }, userEnteredFormat: { textFormat: { bold: true } } },
+                          { userEnteredValue: { stringValue: 'Order Type' }, userEnteredFormat: { textFormat: { bold: true } } },
+                          { userEnteredValue: { stringValue: 'Status' }, userEnteredFormat: { textFormat: { bold: true } } },
+                          { userEnteredValue: { stringValue: 'Total' }, userEnteredFormat: { textFormat: { bold: true } } },
+                          { userEnteredValue: { stringValue: 'Time' }, userEnteredFormat: { textFormat: { bold: true } } },
+                          { userEnteredValue: { stringValue: 'Items' }, userEnteredFormat: { textFormat: { bold: true } } },
+                          { userEnteredValue: { stringValue: 'Notes' }, userEnteredFormat: { textFormat: { bold: true } } }
+                        ]
+                      },
+                      ...orders.map(order => ({
+                        values: [
+                          { userEnteredValue: { stringValue: order.id } },
+                          { userEnteredValue: { stringValue: order.customerName } },
+                          { userEnteredValue: { stringValue: order.phone } },
+                          { userEnteredValue: { stringValue: order.type } },
+                          { userEnteredValue: { stringValue: order.status } },
+                          { userEnteredValue: { stringValue: `$${order.total.toFixed(2)}` } },
+                          { userEnteredValue: { stringValue: order.time } },
+                          { userEnteredValue: { stringValue: order.items.map(item => `${item.qty}x ${item.name} (${item.size})`).join(', ') } },
+                          { userEnteredValue: { stringValue: order.notes } }
+                        ]
+                      }))
+                    ]
+                  }
+                ]
+              },
+              {
+                properties: { title: 'Feedback' },
+                data: [
+                  {
+                    startRow: 0,
+                    startColumn: 0,
+                    rowData: [
+                      {
+                        values: [
+                          { userEnteredValue: { stringValue: 'Name' }, userEnteredFormat: { textFormat: { bold: true } } },
+                          { userEnteredValue: { stringValue: 'Rating' }, userEnteredFormat: { textFormat: { bold: true } } },
+                          { userEnteredValue: { stringValue: 'Date' }, userEnteredFormat: { textFormat: { bold: true } } },
+                          { userEnteredValue: { stringValue: 'Category' }, userEnteredFormat: { textFormat: { bold: true } } },
+                          { userEnteredValue: { stringValue: 'Drink' }, userEnteredFormat: { textFormat: { bold: true } } },
+                          { userEnteredValue: { stringValue: 'Comment' }, userEnteredFormat: { textFormat: { bold: true } } },
+                          { userEnteredValue: { stringValue: 'Owner Response' }, userEnteredFormat: { textFormat: { bold: true } } },
+                          { userEnteredValue: { stringValue: 'Response Date' }, userEnteredFormat: { textFormat: { bold: true } } }
+                        ]
+                      },
+                      ...feedbacks.map(fb => ({
+                        values: [
+                          { userEnteredValue: { stringValue: fb.name } },
+                          { userEnteredValue: { numberValue: fb.rating } },
+                          { userEnteredValue: { stringValue: fb.date } },
+                          { userEnteredValue: { stringValue: fb.category } },
+                          { userEnteredValue: { stringValue: fb.drink } },
+                          { userEnteredValue: { stringValue: fb.comment } },
+                          { userEnteredValue: { stringValue: fb.ownerResponse ? fb.ownerResponse.comment : 'N/A' } },
+                          { userEnteredValue: { stringValue: fb.ownerResponse ? fb.ownerResponse.date : 'N/A' } }
+                        ]
+                      }))
+                    ]
+                  }
+                ]
+              },
+              {
+                properties: { title: 'Tickets' },
+                data: [
+                  {
+                    startRow: 0,
+                    startColumn: 0,
+                    rowData: [
+                      {
+                        values: [
+                          { userEnteredValue: { stringValue: 'Ticket ID' }, userEnteredFormat: { textFormat: { bold: true } } },
+                          { userEnteredValue: { stringValue: 'Type' }, userEnteredFormat: { textFormat: { bold: true } } },
+                          { userEnteredValue: { stringValue: 'Status' }, userEnteredFormat: { textFormat: { bold: true } } },
+                          { userEnteredValue: { stringValue: 'First Name' }, userEnteredFormat: { textFormat: { bold: true } } },
+                          { userEnteredValue: { stringValue: 'Last Name' }, userEnteredFormat: { textFormat: { bold: true } } },
+                          { userEnteredValue: { stringValue: 'Email' }, userEnteredFormat: { textFormat: { bold: true } } },
+                          { userEnteredValue: { stringValue: 'Phone' }, userEnteredFormat: { textFormat: { bold: true } } },
+                          { userEnteredValue: { stringValue: 'Date' }, userEnteredFormat: { textFormat: { bold: true } } },
+                          { userEnteredValue: { stringValue: 'Message' }, userEnteredFormat: { textFormat: { bold: true } } }
+                        ]
+                      },
+                      ...tickets.map(ticket => ({
+                        values: [
+                          { userEnteredValue: { stringValue: ticket.id } },
+                          { userEnteredValue: { stringValue: ticket.type } },
+                          { userEnteredValue: { stringValue: ticket.status } },
+                          { userEnteredValue: { stringValue: ticket.firstName } },
+                          { userEnteredValue: { stringValue: ticket.lastName } },
+                          { userEnteredValue: { stringValue: ticket.email } },
+                          { userEnteredValue: { stringValue: ticket.phone } },
+                          { userEnteredValue: { stringValue: ticket.date } },
+                          { userEnteredValue: { stringValue: ticket.message } }
+                        ]
+                      }))
+                    ]
+                  }
+                ]
+              }
+            ]
+          };
+
+          // Use Google Sheets API v4
+          const response = await fetch('https://sheets.googleapis.com/v4/spreadsheets', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(sheetData)
+          });
+
+          if (!response.ok) {
+            throw new Error('Failed to create Google Sheet. Using fallback CSV download.');
+          }
+
+          const result = await response.json();
+          const spreadsheetUrl = result.spreadsheetUrl;
+
+          setExportMessage('✓ Google Sheet created successfully!');
+          setTimeout(() => {
+            window.open(spreadsheetUrl, '_blank');
+            setIsExporting(false);
+            setExportMessage('');
+          }, 1500);
+
+        } catch (error) {
+          console.error('Google Sheets export failed:', error);
+          setExportMessage('Google Sheets unavailable. Downloading CSV instead...');
+          
+          // Fallback to CSV download
+          setTimeout(() => {
+            exportAsCSV();
+            setIsExporting(false);
+            setExportMessage('');
+          }, 1000);
+        }
+      };
+
+      const exportAsCSV = () => {
+        // Prepare CSV content
+        let csvContent = '';
+        
+        // Orders Section
+        csvContent += 'DAILY ORDERS REPORT\n';
+        csvContent += 'Generated: ' + new Date().toLocaleString() + '\n\n';
+        csvContent += 'Order ID,Customer Name,Phone,Order Type,Status,Total,Time,Items,Notes\n';
+        
+        orders.forEach(order => {
+          const itemsStr = order.items.map(item => 
+            `${item.qty}x ${item.name} (${item.size} ${item.sweetness} ${item.ice})`
+          ).join(' | ');
+          
+          csvContent += `"${order.id}","${order.customerName}","${order.phone}","${order.type}","${order.status}","$${order.total.toFixed(2)}","${order.time}","${itemsStr}","${order.notes}"\n`;
+        });
+        
+        // Summary
+        const totalRevenue = orders.reduce((sum, o) => sum + o.total, 0);
+        const completedOrders = orders.filter(o => o.status === 'Completed').length;
+        csvContent += `\nSUMMARY\n`;
+        csvContent += `Total Orders,${orders.length}\n`;
+        csvContent += `Completed Orders,${completedOrders}\n`;
+        csvContent += `Total Revenue,$${totalRevenue.toFixed(2)}\n\n`;
+        
+        // Feedback Section
+        csvContent += 'CUSTOMER FEEDBACK\n';
+        csvContent += 'Name,Rating,Date,Category,Drink,Comment,Owner Response,Response Date\n';
+        
+        feedbacks.forEach(fb => {
+          const ownerResp = fb.ownerResponse ? fb.ownerResponse.comment.replace(/"/g, '""') : 'N/A';
+          const ownerRespDate = fb.ownerResponse ? fb.ownerResponse.date : 'N/A';
+          const comment = fb.comment.replace(/"/g, '""');
+          
+          csvContent += `"${fb.name}",${fb.rating},"${fb.date}","${fb.category}","${fb.drink}","${comment}","${ownerResp}","${ownerRespDate}"\n`;
+        });
+        
+        // Average rating
+        const avgRating = feedbacks.length > 0 
+          ? (feedbacks.reduce((sum, fb) => sum + fb.rating, 0) / feedbacks.length).toFixed(2)
+          : 'N/A';
+        csvContent += `\nAverage Rating,${avgRating}\n\n`;
+        
+        // Tickets Section
+        csvContent += 'SUPPORT TICKETS\n';
+        csvContent += 'Ticket ID,Type,Status,First Name,Last Name,Email,Phone,Date,Message\n';
+        
+        tickets.forEach(ticket => {
+          const message = ticket.message.replace(/"/g, '""');
+          csvContent += `"${ticket.id}","${ticket.type}","${ticket.status}","${ticket.firstName}","${ticket.lastName}","${ticket.email}","${ticket.phone}","${ticket.date}","${message}"\n`;
+        });
+        
+        csvContent += `\nTotal Tickets,${tickets.length}\n`;
+        csvContent += `Open Tickets,${tickets.filter(t => t.status === 'Open').length}\n`;
+        csvContent += `Resolved Tickets,${tickets.filter(t => t.status === 'Resolved').length}\n`;
+        
+        // Create download
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        const dateStr = new Date().toISOString().split('T')[0];
+        
+        link.setAttribute('href', url);
+        link.setAttribute('download', `chamele-tea-daily-report-${dateStr}.csv`);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      };
+
+      const resetOrders = () => {
+        if (window.confirm('⚠️ Are you sure you want to reset all orders? This action cannot be undone.')) {
+          if (window.confirm('⚠️ FINAL WARNING: All order data will be permanently deleted. Continue?')) {
+            setOrders([]);
+            alert('✓ All orders have been reset.');
+          }
+        }
+      };
+
+      const createBackup = () => {
+        const backup = {
+          version: '1.0',
+          timestamp: new Date().toISOString(),
+          businessName: 'Chamele-Tea',
+          data: {
+            orders,
+            feedbacks,
+            tickets
+          }
+        };
+        
+        const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        const dateStr = new Date().toISOString().split('T')[0];
+        link.href = url;
+        link.download = `chamele-tea-backup-${dateStr}.json`;
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        alert('✓ Backup created successfully!');
+      };
+
+      const restoreBackup = () => {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.json';
+        input.onchange = (e) => {
+          const file = e.target.files[0];
+          if (!file) return;
+          
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            try {
+              const backup = JSON.parse(event.target.result);
+              if (window.confirm(`Restore backup from ${new Date(backup.timestamp).toLocaleString()}? This will overwrite current data.`)) {
+                setOrders(backup.data.orders || []);
+                setFeedbacks(backup.data.feedbacks || []);
+                setTickets(backup.data.tickets || []);
+                alert('✓ Backup restored successfully!');
+              }
+            } catch (error) {
+              alert('❌ Invalid backup file. Please select a valid backup JSON file.');
+            }
+          };
+          reader.readAsText(file);
+        };
+        input.click();
+      };
+
+      // Open Customize Drink Modal
+      const openCustomizeModal = (item) => {
+        setCustomizingItem(item);
+        setCurrentOptions({
+          size: 'Regular',
+          sweetness: '50%',
+          ice: 'Regular Ice',
+          toppings: [],
+          qty: 1
+        });
+      };
+
+      // Calculate drink item total price
+      const calculateItemPrice = (item, options) => {
+        let price = item.price;
+        if (options.size === 'Large') price += 1.00;
+        options.toppings.forEach(tName => {
+          const t = TOPPING_OPTIONS.find(top => top.name === tName);
+          if (t) price += t.price;
+        });
+        return price * options.qty;
+      };
+
+      // Add drink to cart
+      const handleAddToCart = () => {
+        if (!customizingItem) return;
+        const itemPrice = calculateItemPrice(customizingItem, currentOptions) / currentOptions.qty;
+        
+        const cartEntry = {
+          cartId: Date.now() + Math.random().toString(36).substring(2, 5),
+          id: customizingItem.id,
+          name: customizingItem.name,
+          image: customizingItem.image,
+          size: currentOptions.size,
+          sweetness: currentOptions.sweetness,
+          ice: currentOptions.ice,
+          toppings: [...currentOptions.toppings],
+          unitPrice: itemPrice,
+          qty: currentOptions.qty,
+          totalPrice: itemPrice * currentOptions.qty
+        };
+
+        setCart(prev => [...prev, cartEntry]);
+        setCustomizingItem(null);
+        setIsCartOpen(true);
+      };
+
+      // Toggle Topping Selection
+      const toggleTopping = (toppingName) => {
+        setCurrentOptions(prev => {
+          const exists = prev.toppings.includes(toppingName);
+          return {
+            ...prev,
+            toppings: exists 
+              ? prev.toppings.filter(t => t !== toppingName)
+              : [...prev.toppings, toppingName]
+          };
+        });
+      };
+
+      // Cart Calculations
+      const cartSubtotal = cart.reduce((sum, item) => sum + item.totalPrice, 0);
+      const taxAmount = cartSubtotal * 0.095; // 9.5% local tax
+      const cartTotal = cartSubtotal + taxAmount;
+
+      const handleCheckout = (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const customerName = formData.get('customerName') || 'Guest';
+        const phone = formData.get('phone') || 'N/A';
+        const type = formData.get('type') || 'Pickup';
+        const notes = formData.get('notes') || '';
+
+        const newOrder = {
+          id: `CT-${Math.floor(1000 + Math.random() * 9000)}`,
+          customerName,
+          phone,
+          items: cart.map(i => ({
+            name: i.name,
+            size: i.size,
+            sweetness: i.sweetness,
+            ice: i.ice,
+            toppings: i.toppings,
+            price: i.unitPrice,
+            qty: i.qty
+          })),
+          total: cartTotal,
+          type,
+          status: 'Preparing',
+          time: 'Just now',
+          notes
+        };
+
+        setOrders([newOrder, ...orders]);
+        setOrderSuccess(newOrder);
+        setCart([]);
+        setIsCartOpen(false);
+
+        // Trigger visual confetti celebratory effect
+        if (window.confetti) {
+          window.confetti({
+            particleCount: 80,
+            spread: 70,
+            origin: { y: 0.6 },
+            colors: ['#10B981', '#14B8A6', '#8B5CF6', '#FACC15']
+          });
+        }
+      };
+
+      const handleFeedbackSubmit = (e) => {
+        e.preventDefault();
+        
+        // Input validation
+        if (!feedbackForm.comment.trim() || feedbackForm.comment.trim().length < 10) {
+          alert('❌ Please provide a detailed review (at least 10 characters).');
+          return;
+        }
+
+        const newEntry = {
+          id: `fb-${Date.now()}`,
+          name: feedbackForm.name.trim() || 'Happy Customer',
+          rating: Number(feedbackForm.rating),
+          date: new Date().toLocaleString(),
+          category: feedbackForm.category,
+          comment: feedbackForm.comment.trim(),
+          drink: feedbackForm.drink,
+          ownerResponse: null
+        };
+
+        setFeedbacks([newEntry, ...feedbacks]);
+        setFeedbackSubmitted(true);
+        setFeedbackForm({
+          name: '',
+          rating: 5,
+          category: 'Taste & Quality',
+          comment: '',
+          drink: 'Chameleon Signature Brown Sugar'
+        });
+
+        setTimeout(() => setFeedbackSubmitted(false), 4000);
+      };
+
+      const handleOwnerLogin = (e) => {
+        e.preventDefault();
+        
+        // Check if locked out
+        if (lockoutTime && Date.now() < lockoutTime) {
+          const minutesLeft = Math.ceil((lockoutTime - Date.now()) / 60000);
+          setPinError(`🔒 Too many failed attempts. Try again in ${minutesLeft} minute${minutesLeft > 1 ? 's' : ''}.`);
+          setOwnerPinInput('');
+          return;
+        }
+        
+        if (ownerPinInput === 'Chameleon_Tea123') {
+          setIsOwnerAuthenticated(true);
+          setLoginAttempts(0);
+          setLockoutTime(null);
+          setPinError('');
+          setOwnerPinInput('');
+        } else {
+          const newAttempts = loginAttempts + 1;
+          setLoginAttempts(newAttempts);
+          
+          if (newAttempts >= 5) {
+            setLockoutTime(Date.now() + 15 * 60 * 1000); // 15 minute lockout
+            setPinError('🔒 Too many failed attempts. Account locked for 15 minutes.');
+          } else {
+            setPinError(`❌ Incorrect password. ${5 - newAttempts} attempt${5 - newAttempts > 1 ? 's' : ''} remaining.`);
+          }
+          setOwnerPinInput('');
+        }
+      };
+
+      const updateOrderStatus = (orderId, newStatus) => {
+        setOrders(orders.map(o => o.id === orderId ? { ...o, status: newStatus } : o));
+      };
+
+      return (
+        <div className="flex flex-col min-h-screen bg-slate-50">
+          
+          {/* TOP BAR / NAVIGATION */}
+          <header className="sticky top-0 z-30 bg-slate-900/95 backdrop-blur-md text-white border-b border-slate-800 shadow-md">
+            <div className="max-w-md mx-auto px-4 py-3 flex items-center justify-between">
+              
+              {/* Logo & Brand */}
+              <div 
+                onClick={() => setActiveTab('home')}
+                className="flex items-center gap-2.5 cursor-pointer group"
+              >
+                <div className="relative">
+                  <ChameleonMascot className="w-9 h-9 transform group-hover:scale-105 transition-transform" />
+                  <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-teal-500"></span>
+                  </span>
+                </div>
+                <div>
+                  <h1 className="text-xl font-extrabold tracking-tight bg-gradient-to-r from-teal-400 via-emerald-400 to-purple-400 bg-clip-text text-transparent">
+                    Chamele-Tea
+                  </h1>
+                  <p className="text-[10px] text-slate-400 font-medium tracking-wide">CUSTOMIZABLE BOBA LAB</p>
+                </div>
+              </div>
+
+              {/* Action Buttons: Cart & Owner Access */}
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setIsCartOpen(true)}
+                  className="relative p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 transition-colors"
+                  aria-label="Open Cart"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                  </svg>
+                  {cart.length > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-gradient-to-r from-pink-500 to-purple-600 text-white text-[11px] font-bold w-5 h-5 rounded-full flex items-center justify-center animate-pulse">
+                      {cart.reduce((sum, item) => sum + item.qty, 0)}
+                    </span>
+                  )}
+                </button>
+
+                {/* Owner Portal Toggle */}
+                <button
+                  onClick={() => setActiveTab('owner')}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all ${
+                    activeTab === 'owner' 
+                      ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg' 
+                      : 'bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white'
+                  }`}
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  </svg>
+                  <span>Owner</span>
+                </button>
+              </div>
+
+            </div>
+          </header>
+
+          {/* MAIN CONTENT AREA */}
+          <main className="flex-1 max-w-md w-full mx-auto pb-24">
+            
+            {}
+            {activeTab === 'home' && (
+              <div className="space-y-5 pt-3 px-4">
+                
+                {/* Hero Showcase Banner */}
+                <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-emerald-950 to-purple-950 text-white p-5 shadow-xl border border-teal-500/30">
+                  <div className="absolute right-0 top-0 bottom-0 w-1/2 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-teal-400/20 via-purple-500/10 to-transparent pointer-events-none"></div>
+                  
+                  <div className="relative z-10 space-y-3">
+                    <div className="flex items-center gap-2">
+                      <span className="px-2.5 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-[10px] font-bold text-emerald-300 uppercase tracking-wider flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+                        Independent & Handcrafted
+                      </span>
+                    </div>
+
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <h2 className="text-2xl font-black text-white leading-tight">
+                          Color Your Boba Experience!
+                        </h2>
+                        <p className="text-xs text-slate-300 mt-1 leading-relaxed">
+                          Small batch teas, authentic brown sugar pearls, and tailored sweetness by Kevin Do & team.
+                        </p>
+                      </div>
+                      <div className="p-2 bg-slate-800/80 rounded-2xl border border-teal-500/30 shrink-0">
+                        <ChameleonMascot className="w-12 h-12" />
+                      </div>
+                    </div>
+
+                    <div className="pt-2">
+                      <button
+                        onClick={() => setActiveTab('menu')}
+                        className="w-full py-3 bg-gradient-to-r from-teal-400 via-emerald-500 to-teal-500 hover:opacity-95 text-slate-950 font-black rounded-xl text-xs tracking-wide uppercase shadow-lg shadow-teal-500/20 transition-all flex items-center justify-center gap-2"
+                      >
+                        <span>Start Customizing Your Drink</span>
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Highlights Bar */}
+                <div className="grid grid-cols-3 gap-2 text-center">
+                  <div className="bg-white p-2.5 rounded-2xl border border-slate-200 shadow-sm">
+                    <span className="text-base font-black text-emerald-600">4.9★</span>
+                    <p className="text-[10px] text-slate-500 font-medium">Community Rating</p>
+                  </div>
+                  <div className="bg-white p-2.5 rounded-2xl border border-slate-200 shadow-sm">
+                    <span className="text-base font-black text-purple-600">4 Hrs</span>
+                    <p className="text-[10px] text-slate-500 font-medium">Fresh Tea Brews</p>
+                  </div>
+                  <div className="bg-white p-2.5 rounded-2xl border border-slate-200 shadow-sm">
+                    <span className="text-base font-black text-teal-600">100%</span>
+                    <p className="text-[10px] text-slate-500 font-medium">Custom Flavors</p>
+                  </div>
+                </div>
+
+                {/* Featured Popular Drinks Showcase */}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between px-1">
+                    <div>
+                      <h3 className="font-extrabold text-slate-900 text-sm">Popular Signature Brews</h3>
+                      <p className="text-[11px] text-slate-500">Customer favorites crafted daily</p>
+                    </div>
+                    <button
+                      onClick={() => setActiveTab('menu')}
+                      className="text-xs font-bold text-teal-600 hover:text-teal-700 flex items-center gap-0.5"
+                    >
+                      View All
+                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                      </svg>
+                    </button>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    {INITIAL_MENU.filter(m => m.popular).slice(0, 4).map(item => (
+                      <div key={item.id} className="bg-white rounded-2xl p-2.5 border border-slate-200/90 shadow-sm flex flex-col justify-between">
+                        <div className="relative h-28 rounded-xl overflow-hidden mb-2 bg-slate-100">
+                          <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                          <span className="absolute top-1 left-1 bg-slate-900/80 backdrop-blur-sm text-white text-[9px] font-bold px-1.5 py-0.5 rounded-md">
+                            ★ {item.rating}
+                          </span>
+                        </div>
+                        <div>
+                          <h4 className="font-bold text-slate-900 text-xs leading-tight line-clamp-1">{item.name}</h4>
+                          <p className="text-[10px] text-slate-500 font-medium mt-0.5">${item.price.toFixed(2)}</p>
+                        </div>
+                        <button
+                          onClick={() => openCustomizeModal(item)}
+                          className="mt-2 w-full py-1.5 bg-slate-900 hover:bg-teal-600 text-white rounded-lg text-[11px] font-bold transition-colors"
+                        >
+                          Order
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Front Page Customer Reviews & Owner Responses Preview */}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between px-1">
+                    <div>
+                      <h3 className="font-extrabold text-slate-900 text-sm">Community Voices & Owner Replies</h3>
+                      <p className="text-[11px] text-slate-500">Real feedback from local boba lovers</p>
+                    </div>
+                    <button
+                      onClick={() => setActiveTab('feedback')}
+                      className="text-xs font-bold text-purple-600 hover:text-purple-700 flex items-center gap-0.5"
+                    >
+                      All Reviews
+                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                      </svg>
+                    </button>
+                  </div>
+
+                  <div className="space-y-2.5">
+                    {feedbacks.slice(0, 2).map(fb => (
+                      <div key={fb.id} className="bg-white rounded-2xl p-3.5 border border-slate-200/90 shadow-sm space-y-2">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <div className="w-7 h-7 rounded-full bg-teal-100 text-teal-800 font-extrabold text-xs flex items-center justify-center">
+                              {fb.name.charAt(0)}
+                            </div>
+                            <div>
+                              <p className="text-xs font-bold text-slate-900">{fb.name}</p>
+                              <p className="text-[10px] text-slate-400">{fb.drink}</p>
+                            </div>
+                          </div>
+                          <span className="text-xs font-bold text-amber-400">{"★".repeat(fb.rating)}</span>
+                        </div>
+
+                        <p className="text-xs text-slate-700 italic">"{fb.comment}"</p>
+
+                        {/* Owner Response Badge if available */}
+                        {fb.ownerResponse && (
+                          <div className="mt-2 p-2.5 rounded-xl bg-purple-50/90 border border-purple-200 text-xs space-y-1">
+                            <div className="flex items-center gap-1.5 text-purple-900 font-bold text-[11px]">
+                              <ChameleonMascot className="w-4 h-4" />
+                              <span>Response from Kevin Do (Owner)</span>
+                              <span className="text-[9px] text-purple-400 font-normal ml-auto">{fb.ownerResponse.date}</span>
+                            </div>
+                            <p className="text-[11px] text-purple-950 leading-relaxed font-medium pl-5">
+                              {fb.ownerResponse.comment}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Bottom Call to Action */}
+                <div className="bg-gradient-to-r from-teal-500 to-emerald-600 rounded-2xl p-4 text-white text-center shadow-md">
+                  <h4 className="font-extrabold text-sm">Ready for your custom cup?</h4>
+                  <p className="text-xs opacity-90 mt-0.5 mb-3">Adjust sweetness, ice, and pearls exactly the way you like!</p>
+                  <button
+                    onClick={() => setActiveTab('menu')}
+                    className="px-6 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-all shadow"
+                  >
+                    Explore Drink Menu
+                  </button>
+                </div>
+
+              </div>
+            )}
+
+            {/* VIEW 1: CUSTOMER DRINK MENU & ORDERING */}
+            {activeTab === 'menu' && (
+              <div className="space-y-4 pt-3 px-4">
+                
+                {/* Hero / Mascot Promo Banner */}
+                <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-slate-900 via-emerald-950 to-slate-900 text-white p-4 shadow-xl border border-emerald-500/20">
+                  <div className="absolute right-0 top-0 bottom-0 w-1/2 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-teal-500/20 via-purple-500/10 to-transparent pointer-events-none"></div>
+                  
+                  <div className="relative z-10 flex items-center gap-3">
+                    <div className="p-2 bg-slate-800/80 backdrop-blur-sm rounded-2xl border border-teal-500/30 shrink-0">
+                      <ChameleonMascot className="w-12 h-12" />
+                    </div>
+                    <div>
+                      <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-[10px] text-emerald-300 font-medium mb-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+                        Freshly Brewed Every 4 Hours
+                      </div>
+                      <h2 className="text-base font-bold text-white leading-tight">
+                        Change Your Flavor, <br/>Never Your Vibe! 🧋
+                      </h2>
+                      <p className="text-xs text-slate-300 mt-0.5">
+                        Handcrafted local tea by Kevin Do & team.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Category Selector Scrollbar */}
+                <div className="flex items-center gap-2 overflow-x-auto hide-scrollbar py-1">
+                  {categories.map(cat => (
+                    <button
+                      key={cat}
+                      onClick={() => setSelectedCategory(cat)}
+                      className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all shadow-sm ${
+                        selectedCategory === cat
+                          ? 'bg-gradient-to-r from-teal-500 to-emerald-500 text-white shadow-emerald-500/20 shadow-md'
+                          : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-100'
+                      }`}
+                    >
+                      {cat}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Drink List */}
+                <div className="space-y-3.5">
+                  {filteredMenu.map(item => (
+                    <div 
+                      key={item.id}
+                      className="bg-white rounded-2xl p-3 shadow-sm border border-slate-200/80 flex gap-3 hover:shadow-md transition-shadow relative overflow-hidden"
+                    >
+                      {/* Drink Image */}
+                      <div className="relative w-24 h-24 rounded-xl overflow-hidden shrink-0 bg-slate-100">
+                        <img 
+                          src={item.image} 
+                          alt={item.name} 
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.target.src = 'https://images.unsplash.com/photo-1558857563-b371033873b8?auto=format&fit=crop&w=600&q=80';
+                          }}
+                        />
+                        <span className="absolute top-1 left-1 bg-slate-900/80 backdrop-blur-sm text-white text-[9px] font-semibold px-1.5 py-0.5 rounded-md flex items-center gap-0.5">
+                          ★ {item.rating}
+                        </span>
+                      </div>
+
+                      {/* Drink Info & Customization Launcher */}
+                      <div className="flex-1 flex flex-col justify-between min-w-0">
+                        <div>
+                          <div className="flex items-start justify-between gap-1">
+                            <h3 className="font-bold text-slate-900 text-sm leading-tight truncate">
+                              {item.name}
+                            </h3>
+                          </div>
+                          {item.badge && (
+                            <span className="inline-block mt-0.5 text-[10px] font-bold text-purple-600 bg-purple-50 px-1.5 py-0.5 rounded border border-purple-200/60">
+                              {item.badge}
+                            </span>
+                          )}
+                          <p className="text-[11px] text-slate-500 mt-1 line-clamp-2 leading-snug">
+                            {item.description}
+                          </p>
+                        </div>
+
+                        <div className="flex items-center justify-between mt-2 pt-1 border-t border-slate-100">
+                          <span className="font-extrabold text-slate-900 text-sm">
+                            ${item.price.toFixed(2)}
+                          </span>
+                          <button
+                            onClick={() => openCustomizeModal(item)}
+                            className="bg-slate-900 hover:bg-teal-600 active:scale-95 text-white px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1 transition-all shadow-sm"
+                          >
+                            <span>Customize</span>
+                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4" />
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+              </div>
+            )}
+
+            {/* VIEW 3: OFFERS & PROMOTIONS */}
+            {activeTab === 'offers' && (
+              <div className="space-y-4 pt-3 px-4">
+                
+                {/* Header card */}
+                <div className="bg-gradient-to-r from-pink-600 to-purple-600 rounded-2xl p-4 text-white shadow-lg border border-pink-500/30">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-pink-500/30 rounded-xl border border-pink-400/30">
+                      <svg className="w-10 h-10" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5zm0 18c-4.41 0-8-3.59-8-8V8.29l8-3.99 8 3.99V12c0 4.41-3.59 8-8 8z"/>
+                        <path d="M10.5 13.5l-2-2-1.5 1.5L10.5 17l6-6-1.5-1.5z"/>
+                      </svg>
+                    </div>
+                    <div>
+                      <h2 className="text-base font-bold">Special Offers & Rewards</h2>
+                      <p className="text-xs text-pink-100 mt-0.5">
+                        Follow us on social media to unlock exclusive deals!
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Instagram Follow Offer */}
+                <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
+                  <div className="flex items-start gap-3 mb-3">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-600 via-pink-500 to-orange-500 flex items-center justify-center shrink-0">
+                      <svg className="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                      </svg>
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <h3 className="font-extrabold text-slate-900 text-sm">Instagram Follower Exclusive</h3>
+                        <span className="px-2 py-0.5 bg-pink-100 text-pink-700 text-[10px] font-bold rounded-full border border-pink-200">
+                          FREE DRINK
+                        </span>
+                      </div>
+                      <p className="text-xs text-slate-600 leading-relaxed">
+                        Get a <span className="font-bold text-pink-600">FREE regular drink</span> (up to $6.50 value) when you follow, like, and repost our content!
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* How to Claim */}
+                  <div className="bg-gradient-to-br from-pink-50 to-purple-50 rounded-xl p-3 border border-pink-200/60 mb-3">
+                    <h4 className="font-bold text-slate-900 text-xs mb-2 flex items-center gap-1">
+                      <span className="w-2 h-2 rounded-full bg-pink-500"></span>
+                      How to Claim Your Free Drink:
+                    </h4>
+                    <ol className="space-y-2 text-xs text-slate-700">
+                      <li className="flex items-start gap-2">
+                        <span className="flex items-center justify-center w-5 h-5 rounded-full bg-pink-500 text-white font-bold text-[10px] shrink-0 mt-0.5">1</span>
+                        <div>
+                          <strong className="text-slate-900">Follow our Instagram:</strong>
+                          <a 
+                            href="https://instagram.com/chameleateavibes" 
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="block text-pink-600 font-bold underline hover:text-pink-700 mt-0.5"
+                          >
+                            @chameleateavibes
+                          </a>
+                        </div>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="flex items-center justify-center w-5 h-5 rounded-full bg-pink-500 text-white font-bold text-[10px] shrink-0 mt-0.5">2</span>
+                        <div>
+                          <strong className="text-slate-900">Like our latest post</strong>
+                          <p className="text-slate-600 text-[11px] mt-0.5">Find our most recent photo or video and tap that ❤️</p>
+                        </div>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="flex items-center justify-center w-5 h-5 rounded-full bg-pink-500 text-white font-bold text-[10px] shrink-0 mt-0.5">3</span>
+                        <div>
+                          <strong className="text-slate-900">Repost to your Story</strong>
+                          <p className="text-slate-600 text-[11px] mt-0.5">Share our post to your Instagram Story and tag <span className="font-bold">@chameleateavibes</span></p>
+                        </div>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="flex items-center justify-center w-5 h-5 rounded-full bg-pink-500 text-white font-bold text-[10px] shrink-0 mt-0.5">4</span>
+                        <div>
+                          <strong className="text-slate-900">Show proof in-store</strong>
+                          <p className="text-slate-600 text-[11px] mt-0.5">Show us your Instagram follow, like, and story post at checkout to redeem!</p>
+                        </div>
+                      </li>
+                    </ol>
+                  </div>
+
+                  {/* Quick Link Button */}
+                  <a
+                    href="https://instagram.com/chameleateavibes"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block w-full py-3 bg-gradient-to-r from-purple-600 via-pink-500 to-orange-500 hover:from-purple-700 hover:via-pink-600 hover:to-orange-600 text-white rounded-xl text-xs font-bold shadow-md transition-all text-center"
+                  >
+                    <div className="flex items-center justify-center gap-2">
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                      </svg>
+                      <span>Follow @chameleateavibes on Instagram</span>
+                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                      </svg>
+                    </div>
+                  </a>
+
+                  {/* Fine Print */}
+                  <p className="text-[9px] text-slate-400 text-center mt-2 leading-relaxed">
+                    * One free drink per customer. Valid on regular-sized drinks up to $6.50 value. Must show proof of Instagram follow, like, and story post. Offer cannot be combined with other promotions.
+                  </p>
+                </div>
+
+                {/* Additional Offers Section */}
+                <div className="space-y-3">
+                  <h3 className="font-bold text-slate-900 text-sm px-1">More Ways to Save</h3>
+                  
+                  {/* Birthday Offer */}
+                  <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 flex items-start gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shrink-0">
+                      <span className="text-2xl">🎂</span>
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-bold text-slate-900 text-sm">Birthday Special</h4>
+                      <p className="text-xs text-slate-600 mt-1">
+                        Get a <strong>free large drink</strong> on your birthday! Just show us your ID in-store.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Loyalty Card */}
+                  <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 flex items-start gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center shrink-0">
+                      <span className="text-2xl">💳</span>
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-bold text-slate-900 text-sm">Loyalty Rewards</h4>
+                      <p className="text-xs text-slate-600 mt-1">
+                        Buy 9 drinks, get your <strong>10th FREE</strong>! Ask for a loyalty card at checkout.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Student Discount */}
+                  <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 flex items-start gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center shrink-0">
+                      <span className="text-2xl">🎓</span>
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-bold text-slate-900 text-sm">Student Discount</h4>
+                      <p className="text-xs text-slate-600 mt-1">
+                        <strong>15% off</strong> all drinks with valid student ID! Available Monday-Friday, 2-6pm.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Happy Hour */}
+                  <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 flex items-start gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-violet-400 to-purple-500 flex items-center justify-center shrink-0">
+                      <span className="text-2xl">⏰</span>
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-bold text-slate-900 text-sm">Happy Hour</h4>
+                      <p className="text-xs text-slate-600 mt-1">
+                        <strong>$1 off all drinks</strong> from 2-4pm, Monday through Friday. The perfect afternoon pick-me-up!
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Social Media Links */}
+                <div className="bg-gradient-to-r from-slate-900 to-slate-800 rounded-2xl p-4 text-white shadow-lg">
+                  <h3 className="font-bold text-sm mb-3 text-center">Stay Connected</h3>
+                  <div className="grid grid-cols-2 gap-2">
+                    <a
+                      href="https://instagram.com/chameleateavibes"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center gap-2 py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg text-xs font-bold transition-all"
+                    >
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                      </svg>
+                      Instagram
+                    </a>
+                    <a
+                      href="https://facebook.com/chameleateavibes"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center gap-2 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-xs font-bold transition-all"
+                    >
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                      </svg>
+                      Facebook
+                    </a>
+                  </div>
+                </div>
+
+              </div>
+            )}
+
+            {/* VIEW 4: CUSTOMER FEEDBACK & REVIEWS */}
+            {activeTab === 'feedback' && (
+              <div className="space-y-4 pt-3 px-4">
+                
+                {/* Header card */}
+                <div className="bg-gradient-to-r from-purple-900 to-slate-900 rounded-2xl p-4 text-white shadow-lg border border-purple-500/30">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-purple-800/50 rounded-xl border border-purple-400/30">
+                      <ChameleonMascot className="w-10 h-10" />
+                    </div>
+                    <div>
+                      <h2 className="text-base font-bold">Community Reviews & Support</h2>
+                      <p className="text-xs text-purple-200 mt-0.5">
+                        Share feedback or submit a support ticket!
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Customer Support Ticket Form */}
+                <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
+                  <h3 className="font-bold text-slate-900 text-sm mb-3 flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-rose-500"></span>
+                    Submit a Support Ticket
+                  </h3>
+
+                  {ticketSubmitted && (
+                    <div className="mb-3 p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl text-xs font-medium flex items-center gap-2 animate-fade-in">
+                      <svg className="w-4 h-4 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                      </svg>
+                      Thank you! Your support ticket has been submitted. We'll get back to you soon!
+                    </div>
+                  )}
+
+                  <form onSubmit={handleTicketSubmit} className="space-y-3">
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <label className="block text-[11px] font-semibold text-slate-600 mb-1">First Name *</label>
+                        <input
+                          type="text"
+                          required
+                          placeholder="John"
+                          value={ticketForm.firstName}
+                          onChange={e => setTicketForm({...ticketForm, firstName: e.target.value})}
+                          className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-rose-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[11px] font-semibold text-slate-600 mb-1">Last Name *</label>
+                        <input
+                          type="text"
+                          required
+                          placeholder="Doe"
+                          value={ticketForm.lastName}
+                          onChange={e => setTicketForm({...ticketForm, lastName: e.target.value})}
+                          className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-rose-500"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-semibold text-slate-600 mb-1">Email Address *</label>
+                      <input
+                        type="email"
+                        required
+                        placeholder="john.doe@example.com"
+                        value={ticketForm.email}
+                        onChange={e => setTicketForm({...ticketForm, email: e.target.value})}
+                        className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-rose-500"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-semibold text-slate-600 mb-1">Phone Number *</label>
+                      <input
+                        type="tel"
+                        required
+                        placeholder="555-0123"
+                        value={ticketForm.phone}
+                        onChange={e => setTicketForm({...ticketForm, phone: e.target.value})}
+                        className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-rose-500"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-semibold text-slate-600 mb-1">Ticket Type *</label>
+                      <select
+                        value={ticketForm.type}
+                        onChange={e => setTicketForm({...ticketForm, type: e.target.value})}
+                        className="w-full text-xs px-2.5 py-2 rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-rose-500"
+                      >
+                        <option>Complaint</option>
+                        <option>Suggestion</option>
+                        <option>Private Review</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-semibold text-slate-600 mb-1">Your Message *</label>
+                      <textarea
+                        required
+                        rows="3"
+                        placeholder="Describe your complaint or suggestion..."
+                        value={ticketForm.message}
+                        onChange={e => setTicketForm({...ticketForm, message: e.target.value})}
+                        className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-rose-500"
+                      ></textarea>
+                    </div>
+
+                    <button
+                      type="submit"
+                      className="w-full py-2.5 bg-gradient-to-r from-rose-500 to-red-600 hover:from-rose-600 hover:to-red-700 text-white rounded-xl text-xs font-bold shadow-sm transition-all"
+                    >
+                      Submit Support Ticket
+                    </button>
+                  </form>
+                </div>
+
+                {/* Feedback Submission Form */}
+                <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
+                  <h3 className="font-bold text-slate-900 text-sm mb-3 flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-teal-500"></span>
+                    Leave Feedback for Kevin & Team
+                  </h3>
+
+                  {feedbackSubmitted && (
+                    <div className="mb-3 p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl text-xs font-medium flex items-center gap-2 animate-fade-in">
+                      <svg className="w-4 h-4 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                      </svg>
+                      Thank you! Your review helps us continuously improve our drinks!
+                    </div>
+                  )}
+
+                  <form onSubmit={handleFeedbackSubmit} className="space-y-3">
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <label className="block text-[11px] font-semibold text-slate-600 mb-1">Your Name</label>
+                        <input
+                          type="text"
+                          required
+                          placeholder="e.g. Alex M."
+                          value={feedbackForm.name}
+                          onChange={e => setFeedbackForm({...feedbackForm, name: e.target.value})}
+                          className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[11px] font-semibold text-slate-600 mb-1">Category</label>
+                        <select
+                          value={feedbackForm.category}
+                          onChange={e => setFeedbackForm({...feedbackForm, category: e.target.value})}
+                          className="w-full text-xs px-2.5 py-2 rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-teal-500"
+                        >
+                          <option>Taste & Quality</option>
+                          <option>Service & Staff</option>
+                          <option>Atmosphere & Vibe</option>
+                          <option>Menu Suggestion</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-semibold text-slate-600 mb-1">Favorite Drink Ordered</label>
+                      <select
+                        value={feedbackForm.drink}
+                        onChange={e => setFeedbackForm({...feedbackForm, drink: e.target.value})}
+                        className="w-full text-xs px-2.5 py-2 rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-teal-500"
+                      >
+                        {INITIAL_MENU.map(m => (
+                          <option key={m.id} value={m.name}>{m.name}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* Star Rating Picker */}
+                    <div>
+                      <label className="block text-[11px] font-semibold text-slate-600 mb-1">Rating</label>
+                      <div className="flex items-center gap-1 bg-slate-50 p-2 rounded-xl border border-slate-200/80">
+                        {[1, 2, 3, 4, 5].map(star => (
+                          <button
+                            type="button"
+                            key={star}
+                            onClick={() => setFeedbackForm({...feedbackForm, rating: star})}
+                            className="p-1 hover:scale-110 transition-transform"
+                          >
+                            <svg 
+                              className={`w-6 h-6 ${star <= feedbackForm.rating ? 'text-amber-400 fill-amber-400' : 'text-slate-300'}`} 
+                              viewBox="0 0 24 24" 
+                              stroke="currentColor" 
+                              strokeWidth="1.5"
+                            >
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                            </svg>
+                          </button>
+                        ))}
+                        <span className="ml-auto text-xs font-bold text-slate-700">
+                          {feedbackForm.rating} / 5 Stars
+                        </span>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-semibold text-slate-600 mb-1">Your Review</label>
+                      <textarea
+                        required
+                        rows="3"
+                        placeholder="Tell us what you liked or what we can tweak..."
+                        value={feedbackForm.comment}
+                        onChange={e => setFeedbackForm({...feedbackForm, comment: e.target.value})}
+                        className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                      ></textarea>
+                    </div>
+
+                    <button
+                      type="submit"
+                      className="w-full py-2.5 bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 text-white rounded-xl text-xs font-bold shadow-sm transition-all"
+                    >
+                      Submit Community Feedback
+                    </button>
+                  </form>
+                </div>
+
+                {/* List of Recent Feedbacks with Owner Response Display */}
+                <div className="space-y-2.5">
+                  <h3 className="font-bold text-slate-900 text-sm px-1">Recent Community Reviews</h3>
+                  {feedbacks.map(item => (
+                    <div key={item.id} className="bg-white rounded-2xl p-3.5 shadow-sm border border-slate-200/80 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <div className="w-7 h-7 rounded-full bg-emerald-100 text-emerald-800 font-bold text-xs flex items-center justify-center">
+                            {item.name.charAt(0)}
+                          </div>
+                          <div>
+                            <p className="text-xs font-bold text-slate-900">{item.name}</p>
+                            <p className="text-[10px] text-slate-400">{item.date}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center text-amber-400 text-xs font-bold">
+                          {"★".repeat(item.rating)}
+                        </div>
+                      </div>
+
+                      <p className="text-xs text-slate-700 font-normal leading-relaxed">
+                        "{item.comment}"
+                      </p>
+
+                      <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] text-slate-500">
+                        <span className="bg-slate-100 px-2 py-0.5 rounded-md font-medium text-slate-600">
+                          {item.category}
+                        </span>
+                        <span className="italic">Drink: {item.drink}</span>
+                      </div>
+
+                      {/* Display Owner Response if Present */}
+                      {item.ownerResponse && (
+                        <div className="mt-2 p-2.5 bg-purple-50 rounded-xl border border-purple-200 text-xs space-y-1">
+                          <div className="flex items-center justify-between">
+                            <span className="font-bold text-purple-900 text-[11px] flex items-center gap-1">
+                              <ChameleonMascot className="w-3.5 h-3.5" />
+                              Kevin Do (Owner Response):
+                            </span>
+                            <span className="text-[9px] text-purple-400">{item.ownerResponse.date}</span>
+                          </div>
+                          <p className="text-[11px] text-purple-950 font-medium pl-4">
+                            "{item.ownerResponse.comment}"
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+
+              </div>
+            )}
+
+            {/* VIEW 5: OWNER BACKEND PORTAL */}
+            {activeTab === 'owner' && (
+              <div className="space-y-4 pt-3 px-4">
+                
+                {!isOwnerAuthenticated ? (
+                  /* Owner Login Screen */
+                  <div className="bg-white rounded-2xl p-6 shadow-md border border-slate-200 text-center max-w-sm mx-auto mt-6">
+                    <div className="w-14 h-14 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                      <ChameleonMascot className="w-10 h-10" />
+                    </div>
+                    <h2 className="text-lg font-extrabold text-slate-900">Owner Dashboard</h2>
+                    <p className="text-xs text-slate-500 mt-1 mb-4">
+                      Enter password to manage daily operations and customer data.
+                    </p>
+
+                    <form onSubmit={handleOwnerLogin} className="space-y-3">
+                      <input
+                        type="password"
+                        placeholder="Enter Owner Password"
+                        value={ownerPinInput}
+                        onChange={e => setOwnerPinInput(e.target.value)}
+                        className="w-full text-sm px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-purple-600"
+                        autoComplete="current-password"
+                      />
+                      {pinError && (
+                        <p className="text-xs text-rose-500 font-medium">{pinError}</p>
+                      )}
+                      <button
+                        type="submit"
+                        className="w-full py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold transition-colors shadow-md"
+                      >
+                        Unlock Dashboard
+                      </button>
+                    </form>
+                    <p className="text-[10px] text-slate-400 mt-4">
+                      🔒 Secure access for authorized personnel only
+                    </p>
+                  </div>
+                ) : (
+                  /* Authenticated Owner View */
+                  <div className="space-y-4">
+                    
+                    {/* Owner Welcome Banner */}
+                    <div className="bg-slate-900 rounded-2xl p-4 text-white shadow-lg border border-slate-800">
+                      <div className="flex items-center justify-between mb-3">
+                        <div>
+                          <div className="flex items-center gap-1.5">
+                            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Live Store Manager</span>
+                          </div>
+                          <h2 className="text-base font-extrabold mt-0.5">Welcome, Kevin Do! 👋</h2>
+                          <p className="text-xs text-slate-400">Chamele-Tea Main Location</p>
+                        </div>
+                        <button
+                          onClick={() => setIsOwnerAuthenticated(false)}
+                          className="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-medium transition-colors"
+                        >
+                          Lock
+                        </button>
+                      </div>
+
+                      {/* Owner Action Buttons */}
+                      <div className="space-y-2">
+                        {exportMessage && (
+                          <div className={`p-2 rounded-lg text-xs font-medium text-center ${
+                            exportMessage.includes('✓') 
+                              ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' 
+                              : 'bg-blue-50 text-blue-700 border border-blue-200'
+                          }`}>
+                            {exportMessage}
+                          </div>
+                        )}
+                        <div className="grid grid-cols-2 gap-2">
+                          <button
+                            onClick={exportToGoogleSheets}
+                            disabled={isExporting}
+                            className={`px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition-colors flex items-center justify-center gap-1.5 shadow-sm ${
+                              isExporting ? 'opacity-50 cursor-not-allowed' : ''
+                            }`}
+                          >
+                            {isExporting ? (
+                              <>
+                                <svg className="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                </svg>
+                                <span>Creating...</span>
+                              </>
+                            ) : (
+                              <>
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                                <span>Export to Sheets</span>
+                              </>
+                            )}
+                          </button>
+                          <button
+                            onClick={createBackup}
+                            className="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold transition-colors flex items-center justify-center gap-1.5 shadow-sm"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                            </svg>
+                            <span>Backup Data</span>
+                          </button>
+                        </div>
+                        <div className="grid grid-cols-2 gap-2">
+                          <button
+                            onClick={restoreBackup}
+                            className="px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold transition-colors flex items-center justify-center gap-1.5 shadow-sm"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                            </svg>
+                            <span>Restore Backup</span>
+                          </button>
+                          <button
+                            onClick={resetOrders}
+                            className="px-3 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-lg text-xs font-bold transition-colors flex items-center justify-center gap-1.5 shadow-sm"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                            <span>Reset Orders</span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Owner Navigation Sub-Tabs */}
+                    <div className="grid grid-cols-4 gap-1 bg-slate-200/80 p-1 rounded-xl text-xs font-bold">
+                      <button
+                        onClick={() => setOwnerTab('orders')}
+                        className={`py-2 rounded-lg transition-all ${
+                          ownerTab === 'orders' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'
+                        }`}
+                      >
+                        Orders ({orders.filter(o => o.status !== 'Completed').length})
+                      </button>
+                      <button
+                        onClick={() => setOwnerTab('feedback')}
+                        className={`py-2 rounded-lg transition-all ${
+                          ownerTab === 'feedback' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'
+                        }`}
+                      >
+                        Feedback ({feedbacks.length})
+                      </button>
+                      <button
+                        onClick={() => setOwnerTab('tickets')}
+                        className={`py-2 rounded-lg transition-all ${
+                          ownerTab === 'tickets' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'
+                        }`}
+                      >
+                        Tickets ({tickets.length})
+                      </button>
+                      <button
+                        onClick={() => setOwnerTab('stats')}
+                        className={`py-2 rounded-lg transition-all ${
+                          ownerTab === 'stats' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'
+                        }`}
+                      >
+                        Analytics
+                      </button>
+                    </div>
+
+                    {/* SUB-TAB 1: LIVE ORDERS MANAGEMENT */}
+                    {ownerTab === 'orders' && (
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between px-1">
+                          <h3 className="font-bold text-slate-900 text-sm">Active Customer Queue</h3>
+                          <span className="text-xs text-slate-500 font-medium">{orders.length} total today</span>
+                        </div>
+
+                        {orders.length === 0 ? (
+                          <div className="p-8 bg-white rounded-2xl text-center border border-slate-200 text-slate-400 text-xs">
+                            No active orders in queue right now.
+                          </div>
+                        ) : (
+                          orders.map(ord => (
+                            <div key={ord.id} className="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
+                              <div className="flex items-center justify-between border-b border-slate-100 pb-2.5">
+                                <div>
+                                  <div className="flex items-center gap-2">
+                                    <span className="font-extrabold text-sm text-slate-900">{ord.id}</span>
+                                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                                      ord.type === 'Pickup' ? 'bg-blue-50 text-blue-700 border border-blue-200' : 'bg-amber-50 text-amber-700 border border-amber-200'
+                                    }`}>
+                                      {ord.type}
+                                    </span>
+                                  </div>
+                                  <p className="text-xs text-slate-600 font-medium mt-0.5">
+                                    {ord.customerName} • <span className="text-slate-400">{ord.phone}</span>
+                                  </p>
+                                </div>
+                                <div className="text-right">
+                                  <span className="font-extrabold text-slate-900 text-sm">${ord.total.toFixed(2)}</span>
+                                  <p className="text-[10px] text-slate-400">{ord.time}</p>
+                                </div>
+                              </div>
+
+                              {/* Item details */}
+                              <div className="py-2.5 space-y-1.5 border-b border-slate-100">
+                                {ord.items.map((item, idx) => (
+                                  <div key={idx} className="text-xs">
+                                    <div className="flex justify-between font-bold text-slate-800">
+                                      <span>{item.qty}x {item.name} ({item.size})</span>
+                                      <span>${(item.price * item.qty).toFixed(2)}</span>
+                                    </div>
+                                    <p className="text-[11px] text-slate-500">
+                                      {item.sweetness} Sugar, {item.ice}
+                                      {item.toppings.length > 0 && ` + ${item.toppings.join(', ')}`}
+                                    </p>
+                                  </div>
+                                ))}
+                                {ord.notes && (
+                                  <div className="mt-1 p-2 bg-amber-50/80 rounded-lg text-[11px] text-amber-800 font-medium">
+                                    Note: {ord.notes}
+                                  </div>
+                                )}
+                              </div>
+
+                              {/* Status Action buttons */}
+                              <div className="pt-2.5 flex items-center justify-between">
+                                <span className="text-xs font-semibold text-slate-500">
+                                  Status: <span className={`font-bold ${
+                                    ord.status === 'Preparing' ? 'text-amber-600' :
+                                    ord.status === 'Ready' ? 'text-teal-600' : 'text-slate-500'
+                                  }`}>{ord.status}</span>
+                                </span>
+
+                                <div className="flex gap-1.5">
+                                  {ord.status === 'Preparing' && (
+                                    <button
+                                      onClick={() => updateOrderStatus(ord.id, 'Ready')}
+                                      className="px-3 py-1.5 bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold rounded-lg transition-colors"
+                                    >
+                                      Mark Ready
+                                    </button>
+                                  )}
+                                  {ord.status === 'Ready' && (
+                                    <button
+                                      onClick={() => updateOrderStatus(ord.id, 'Completed')}
+                                      className="px-3 py-1.5 bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold rounded-lg transition-colors"
+                                    >
+                                      Complete Pickup
+                                    </button>
+                                  )}
+                                  {ord.status === 'Completed' && (
+                                    <span className="text-xs font-bold text-emerald-600 flex items-center gap-1">
+                                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                                      </svg>
+                                      Completed
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    )}
+
+                    {/* SUB-TAB 2: OWNER FEEDBACK REVIEW & REPLY */}
+                    {ownerTab === 'feedback' && (
+                      <div className="space-y-3">
+                        <div className="bg-white rounded-2xl p-4 border border-slate-200">
+                          <h3 className="font-bold text-slate-900 text-sm mb-1">Customer Feedback & Response Console</h3>
+                          <p className="text-xs text-slate-500">
+                            Reply to customer reviews below. Your responses will appear directly on the public Community Reviews page!
+                          </p>
+                        </div>
+
+                        <div className="space-y-3">
+                          {feedbacks.map(fb => (
+                            <div key={fb.id} className="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 space-y-2">
+                              <div className="flex items-center justify-between">
+                                <div>
+                                  <span className="font-bold text-xs text-slate-900">{fb.name}</span>
+                                  <span className="ml-2 text-[10px] text-slate-400">{fb.date}</span>
+                                </div>
+                                <span className="text-xs font-bold text-amber-500">★ {fb.rating}.0</span>
+                              </div>
+
+                              <p className="text-xs text-slate-700 font-normal">"{fb.comment}"</p>
+                              <p className="text-[10px] text-slate-400 italic">Ordered: {fb.drink}</p>
+
+                              {/* Owner Response area */}
+                              <div className="pt-1">
+                                {replyingFeedbackId === fb.id ? (
+                                  <div className="space-y-2 pt-1 border-t border-slate-100">
+                                    <textarea
+                                      rows="2"
+                                      placeholder="Type your response as Kevin..."
+                                      value={replyText}
+                                      onChange={e => setReplyText(e.target.value)}
+                                      className="w-full text-xs p-2 rounded-xl border border-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                    ></textarea>
+                                    <div className="flex justify-end gap-2">
+                                      <button
+                                        onClick={() => {
+                                          setReplyingFeedbackId(null);
+                                          setReplyText('');
+                                        }}
+                                        className="px-2.5 py-1 text-slate-500 text-xs font-semibold"
+                                      >
+                                        Cancel
+                                      </button>
+                                      <button
+                                        onClick={() => handleOwnerSubmitReply(fb.id)}
+                                        className="px-3 py-1 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-xs font-bold shadow-sm"
+                                      >
+                                        Post Public Reply
+                                      </button>
+                                    </div>
+                                  </div>
+                                ) : fb.ownerResponse ? (
+                                  <div className="p-2.5 bg-purple-50 rounded-xl border border-purple-200 text-xs mt-2">
+                                    <div className="flex justify-between items-center mb-1">
+                                      <span className="font-bold text-purple-900 text-[11px]">Your Reply:</span>
+                                      <span className="text-[9px] text-purple-400">{fb.ownerResponse.date}</span>
+                                    </div>
+                                    <p className="text-[11px] text-purple-950">{fb.ownerResponse.comment}</p>
+                                    <button
+                                      onClick={() => {
+                                        setReplyingFeedbackId(fb.id);
+                                        setReplyText(fb.ownerResponse.comment);
+                                      }}
+                                      className="mt-2 text-[10px] text-purple-700 font-bold underline"
+                                    >
+                                      Edit Reply
+                                    </button>
+                                  </div>
+                                ) : (
+                                  <button
+                                    onClick={() => {
+                                      setReplyingFeedbackId(fb.id);
+                                      setReplyText('');
+                                    }}
+                                    className="px-3 py-1.5 bg-slate-900 hover:bg-purple-700 text-white text-xs font-bold rounded-lg transition-colors flex items-center gap-1"
+                                  >
+                                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+                                    </svg>
+                                    <span>Reply as Owner</span>
+                                  </button>
+                                )}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* SUB-TAB 3: TICKET SYSTEM */}
+                    {ownerTab === 'tickets' && (
+                      <div className="space-y-3">
+                        <div className="bg-white rounded-2xl p-4 border border-slate-200">
+                          <h3 className="font-bold text-slate-900 text-sm mb-1">Customer Support Tickets</h3>
+                          <p className="text-xs text-slate-500">
+                            View and manage customer complaints and suggestions.
+                          </p>
+                        </div>
+
+                        <div className="space-y-3">
+                          {tickets.length === 0 ? (
+                            <div className="p-8 bg-white rounded-2xl text-center border border-slate-200 text-slate-400 text-xs">
+                              No tickets submitted yet.
+                            </div>
+                          ) : (
+                            tickets.map(ticket => (
+                              <div key={ticket.id} className="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 space-y-2">
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center gap-2">
+                                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                                      ticket.type === 'Complaint' 
+                                        ? 'bg-rose-50 text-rose-700 border border-rose-200' 
+                                        : ticket.type === 'Suggestion'
+                                        ? 'bg-blue-50 text-blue-700 border border-blue-200'
+                                        : 'bg-purple-50 text-purple-700 border border-purple-200'
+                                    }`}>
+                                      {ticket.type}
+                                    </span>
+                                    <span className="font-bold text-xs text-slate-900">{ticket.id}</span>
+                                  </div>
+                                  <span className="text-[10px] text-slate-400">{ticket.date}</span>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
+                                  <div>
+                                    <span className="text-slate-500">Name:</span>
+                                    <span className="ml-1 font-bold text-slate-900">{ticket.firstName} {ticket.lastName}</span>
+                                  </div>
+                                  <div>
+                                    <span className="text-slate-500">Phone:</span>
+                                    <span className="ml-1 font-medium text-slate-900">{ticket.phone}</span>
+                                  </div>
+                                  <div className="col-span-2">
+                                    <span className="text-slate-500">Email:</span>
+                                    <span className="ml-1 font-medium text-slate-900">{ticket.email}</span>
+                                  </div>
+                                </div>
+
+                                <div className="pt-2 border-t border-slate-100">
+                                  <p className="text-xs text-slate-700 font-normal">"{ticket.message}"</p>
+                                </div>
+
+                                {/* Owner Response Section */}
+                                <div className="pt-2 border-t border-slate-100">
+                                  {replyingTicketId === ticket.id ? (
+                                    <div className="space-y-2">
+                                      <label className="block text-[10px] font-semibold text-slate-600">Your Response to Customer:</label>
+                                      <textarea
+                                        rows="3"
+                                        placeholder="Type your response to the customer..."
+                                        value={ticketReplyText}
+                                        onChange={e => setTicketReplyText(e.target.value)}
+                                        className="w-full text-xs p-2 rounded-xl border border-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                      ></textarea>
+                                      <div className="flex justify-end gap-2">
+                                        <button
+                                          onClick={() => {
+                                            setReplyingTicketId(null);
+                                            setTicketReplyText('');
+                                          }}
+                                          className="px-2.5 py-1 text-slate-500 text-xs font-semibold hover:text-slate-700"
+                                        >
+                                          Cancel
+                                        </button>
+                                        <button
+                                          onClick={() => handleTicketReply(ticket.id)}
+                                          className="px-3 py-1 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold shadow-sm"
+                                        >
+                                          Send Response
+                                        </button>
+                                      </div>
+                                    </div>
+                                  ) : ticket.ownerResponse ? (
+                                    <div className="p-2.5 bg-indigo-50 rounded-xl border border-indigo-200 text-xs space-y-1">
+                                      <div className="flex justify-between items-center mb-1">
+                                        <span className="font-bold text-indigo-900 text-[11px] flex items-center gap-1">
+                                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                          </svg>
+                                          Your Response:
+                                        </span>
+                                        <span className="text-[9px] text-indigo-400">{ticket.ownerResponse.date}</span>
+                                      </div>
+                                      <p className="text-[11px] text-indigo-950 leading-relaxed">"{ticket.ownerResponse.message}"</p>
+                                      <button
+                                        onClick={() => {
+                                          setReplyingTicketId(ticket.id);
+                                          setTicketReplyText(ticket.ownerResponse.message);
+                                        }}
+                                        className="mt-1 text-[10px] text-indigo-700 font-bold underline hover:text-indigo-800"
+                                      >
+                                        Edit Response
+                                      </button>
+                                    </div>
+                                  ) : (
+                                    <button
+                                      onClick={() => {
+                                        setReplyingTicketId(ticket.id);
+                                        setTicketReplyText('');
+                                      }}
+                                      className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-lg transition-colors flex items-center gap-1"
+                                    >
+                                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                      </svg>
+                                      <span>Reply to Customer</span>
+                                    </button>
+                                  )}
+                                </div>
+
+                                <div className="flex items-center justify-between pt-2 border-t border-slate-100">
+                                  <span className={`text-xs font-semibold ${
+                                    ticket.status === 'Open' ? 'text-amber-600' : 'text-emerald-600'
+                                  }`}>
+                                    Status: {ticket.status}
+                                  </span>
+                                  {ticket.status === 'Open' && (
+                                    <button
+                                      onClick={() => {
+                                        setTickets(tickets.map(t => 
+                                          t.id === ticket.id ? { ...t, status: 'Resolved' } : t
+                                        ));
+                                      }}
+                                      className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg transition-colors"
+                                    >
+                                      Mark Resolved
+                                    </button>
+                                  )}
+                                </div>
+                              </div>
+                            ))
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* SUB-TAB 4: QUICK SHOP ANALYTICS */}
+                    {ownerTab === 'stats' && (
+                      <div className="space-y-3">
+                        <div className="grid grid-cols-2 gap-2">
+                          <div className="bg-white rounded-2xl p-3.5 border border-slate-200 shadow-sm">
+                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Today's Revenue</p>
+                            <p className="text-lg font-extrabold text-slate-900 mt-0.5">
+                              ${orders.reduce((sum, o) => sum + o.total, 0).toFixed(2)}
+                            </p>
+                            <span className="text-[10px] text-emerald-600 font-bold">↑ +14% vs yesterday</span>
+                          </div>
+
+                          <div className="bg-white rounded-2xl p-3.5 border border-slate-200 shadow-sm">
+                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Avg Review</p>
+                            <p className="text-lg font-extrabold text-slate-900 mt-0.5">
+                              {feedbacks.length > 0 
+                                ? (feedbacks.reduce((sum, fb) => sum + fb.rating, 0) / feedbacks.length).toFixed(1)
+                                : '0.0'} / 5.0
+                            </p>
+                            <span className="text-[10px] text-purple-600 font-bold">Based on {feedbacks.length} reviews</span>
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-2">
+                          <div className="bg-white rounded-2xl p-3.5 border border-slate-200 shadow-sm">
+                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Total Orders</p>
+                            <p className="text-lg font-extrabold text-slate-900 mt-0.5">{orders.length}</p>
+                            <span className="text-[10px] text-blue-600 font-bold">
+                              {orders.filter(o => o.status === 'Completed').length} completed
+                            </span>
+                          </div>
+
+                          <div className="bg-white rounded-2xl p-3.5 border border-slate-200 shadow-sm">
+                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Support Tickets</p>
+                            <p className="text-lg font-extrabold text-slate-900 mt-0.5">{tickets.length}</p>
+                            <span className="text-[10px] text-rose-600 font-bold">
+                              {tickets.filter(t => t.status === 'Open').length} open
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
+                          <h4 className="font-bold text-slate-900 text-xs mb-3">Top Selling Drinks Today</h4>
+                          <div className="space-y-2">
+                            <div className="flex items-center justify-between text-xs">
+                              <span className="font-medium text-slate-700">1. Chameleon Signature Brown Sugar</span>
+                              <span className="font-bold text-slate-900">42 cups</span>
+                            </div>
+                            <div className="w-full bg-slate-100 rounded-full h-1.5">
+                              <div className="bg-teal-500 h-1.5 rounded-full" style={{ width: '85%' }}></div>
+                            </div>
+
+                            <div className="flex items-center justify-between text-xs pt-1">
+                              <span className="font-medium text-slate-700">2. Hue Shift Matcha Taro</span>
+                              <span className="font-bold text-slate-900">28 cups</span>
+                            </div>
+                            <div className="w-full bg-slate-100 rounded-full h-1.5">
+                              <div className="bg-purple-500 h-1.5 rounded-full" style={{ width: '60%' }}></div>
+                            </div>
+
+                            <div className="flex items-center justify-between text-xs pt-1">
+                              <span className="font-medium text-slate-700">3. Prism Passion Fruit Oolong</span>
+                              <span className="font-bold text-slate-900">19 cups</span>
+                            </div>
+                            <div className="w-full bg-slate-100 rounded-full h-1.5">
+                              <div className="bg-amber-500 h-1.5 rounded-full" style={{ width: '40%' }}></div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                  </div>
+                )}
+
+              </div>
+            )}
+
+          </main>
+
+          {}
+          {customizingItem && (
+            <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 animate-fade-in">
+              <div className="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl border border-slate-100">
+                
+                {/* Modal Header */}
+                <div className="relative h-40 bg-slate-900 shrink-0">
+                  <img 
+                    src={customizingItem.image} 
+                    alt={customizingItem.name} 
+                    className="w-full h-full object-cover opacity-80"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent"></div>
+                  
+                  <button
+                    onClick={() => setCustomizingItem(null)}
+                    className="absolute top-3 right-3 bg-slate-900/80 hover:bg-slate-900 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm shadow-md"
+                  >
+                    ✕
+                  </button>
+
+                  <div className="absolute bottom-3 left-4 right-4 text-white">
+                    <h3 className="font-extrabold text-base leading-tight">{customizingItem.name}</h3>
+                    <p className="text-xs text-slate-300 font-medium">${customizingItem.price.toFixed(2)} Base</p>
+                  </div>
+                </div>
+
+                {/* Modal Body - Scrollable options */}
+                <div className="p-4 overflow-y-auto space-y-4 flex-1">
+                  
+                  {/* Size Option */}
+                  <div>
+                    <label className="block text-xs font-bold text-slate-800 mb-1.5">Select Size</label>
+                    <div className="grid grid-cols-2 gap-2">
+                      {['Regular', 'Large (+ $1.00)'].map(sz => {
+                        const isLarge = sz.includes('Large');
+                        const szValue = isLarge ? 'Large' : 'Regular';
+                        const selected = currentOptions.size === szValue;
+                        return (
+                          <button
+                            key={sz}
+                            type="button"
+                            onClick={() => setCurrentOptions({...currentOptions, size: szValue})}
+                            className={`py-2 px-3 rounded-xl text-xs font-bold border transition-all ${
+                              selected 
+                                ? 'bg-slate-900 text-white border-slate-900 shadow-sm' 
+                                : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+                            }`}
+                          >
+                            {sz}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Sweetness Level */}
+                  <div>
+                    <label className="block text-xs font-bold text-slate-800 mb-1.5">Sweetness Level</label>
+                    <div className="grid grid-cols-5 gap-1">
+                      {SWEETNESS_OPTIONS.map(s => (
+                        <button
+                          key={s}
+                          type="button"
+                          onClick={() => setCurrentOptions({...currentOptions, sweetness: s})}
+                          className={`py-2 text-[11px] font-bold rounded-lg border transition-all ${
+                            currentOptions.sweetness === s 
+                              ? 'bg-teal-500 text-white border-teal-500 shadow-sm' 
+                              : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+                          }`}
+                        >
+                          {s}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Ice Level */}
+                  <div>
+                    <label className="block text-xs font-bold text-slate-800 mb-1.5">Ice Level</label>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+                      {ICE_OPTIONS.map(ic => (
+                        <button
+                          key={ic}
+                          type="button"
+                          onClick={() => setCurrentOptions({...currentOptions, ice: ic})}
+                          className={`py-2 px-2 text-[11px] font-bold rounded-lg border transition-all ${
+                            currentOptions.ice === ic 
+                              ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm' 
+                              : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+                          }`}
+                        >
+                          {ic}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Toppings Checklist */}
+                  <div>
+                    <label className="block text-xs font-bold text-slate-800 mb-1.5">Add Toppings</label>
+                    <div className="grid grid-cols-2 gap-2">
+                      {TOPPING_OPTIONS.map(top => {
+                        const isChecked = currentOptions.toppings.includes(top.name);
+                        return (
+                          <button
+                            key={top.name}
+                            type="button"
+                            onClick={() => toggleTopping(top.name)}
+                            className={`p-2 rounded-xl text-xs font-semibold border flex items-center justify-between text-left transition-all ${
+                              isChecked 
+                                ? 'bg-purple-50 border-purple-500 text-purple-900 font-bold' 
+                                : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
+                            }`}
+                          >
+                            <span>{top.name}</span>
+                            <span className="text-[10px] opacity-80">+${top.price.toFixed(2)}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Quantity Stepper */}
+                  <div className="flex items-center justify-between pt-2">
+                    <span className="text-xs font-bold text-slate-800">Quantity</span>
+                    <div className="flex items-center gap-3 bg-slate-100 p-1 rounded-xl">
+                      <button
+                        type="button"
+                        onClick={() => setCurrentOptions({...currentOptions, qty: Math.max(1, currentOptions.qty - 1)})}
+                        className="w-7 h-7 bg-white rounded-lg shadow-sm font-bold text-slate-700 flex items-center justify-center text-sm"
+                      >
+                        -
+                      </button>
+                      <span className="text-xs font-extrabold text-slate-900 px-1">{currentOptions.qty}</span>
+                      <button
+                        type="button"
+                        onClick={() => setCurrentOptions({...currentOptions, qty: currentOptions.qty + 1})}
+                        className="w-7 h-7 bg-white rounded-lg shadow-sm font-bold text-slate-700 flex items-center justify-center text-sm"
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+
+                </div>
+
+                {/* Modal Footer */}
+                <div className="p-4 border-t border-slate-100 bg-slate-50 flex items-center gap-3 shrink-0">
+                  <div className="flex-1">
+                    <p className="text-[10px] text-slate-400 font-medium">Total Item Price</p>
+                    <p className="text-base font-extrabold text-slate-900">
+                      ${calculateItemPrice(customizingItem, currentOptions).toFixed(2)}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleAddToCart}
+                    className="flex-1 py-3 bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 text-white text-xs font-bold rounded-xl shadow-md transition-all text-center"
+                  >
+                    Add to Order
+                  </button>
+                </div>
+
+              </div>
+            </div>
+          )}
+
+          {}
+          {isCartOpen && (
+            <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex justify-end animate-fade-in">
+              <div className="bg-white w-full max-w-md h-full flex flex-col shadow-2xl">
+                
+                {/* Cart Header */}
+                <div className="p-4 bg-slate-900 text-white flex items-center justify-between border-b border-slate-800">
+                  <div className="flex items-center gap-2">
+                    <ChameleonMascot className="w-7 h-7" />
+                    <h3 className="font-bold text-sm">Your Chamele-Tea Order</h3>
+                  </div>
+                  <button
+                    onClick={() => setIsCartOpen(false)}
+                    className="text-slate-400 hover:text-white p-1"
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                {/* Cart Items List */}
+                <div className="flex-1 overflow-y-auto p-4 space-y-3">
+                  {cart.length === 0 ? (
+                    <div className="h-full flex flex-col items-center justify-center text-center p-6 text-slate-400">
+                      <ChameleonMascot className="w-16 h-16 opacity-40 mb-2" />
+                      <p className="text-sm font-bold text-slate-600">Your cart is feeling empty!</p>
+                      <p className="text-xs text-slate-400 mt-1">Explore our colorful boba menu and customize your favorite brew.</p>
+                    </div>
+                  ) : (
+                    cart.map((cItem) => (
+                      <div key={cItem.cartId} className="bg-slate-50 rounded-2xl p-3 border border-slate-200/80 relative">
+                        <div className="flex gap-2.5">
+                          <img src={cItem.image} alt={cItem.name} className="w-14 h-14 rounded-xl object-cover shrink-0" />
+                          <div className="flex-1 min-w-0">
+                            <div className="flex justify-between items-start">
+                              <h4 className="font-bold text-xs text-slate-900 truncate">{cItem.name}</h4>
+                              <button
+                                onClick={() => setCart(cart.filter(i => i.cartId !== cItem.cartId))}
+                                className="text-slate-400 hover:text-rose-500 text-xs font-bold pl-1"
+                              >
+                                ✕
+                              </button>
+                            </div>
+                            <p className="text-[11px] text-slate-500 mt-0.5">
+                              {cItem.size} • {cItem.sweetness} • {cItem.ice}
+                            </p>
+                            {cItem.toppings.length > 0 && (
+                              <p className="text-[10px] text-purple-700 font-medium">
+                                + {cItem.toppings.join(', ')}
+                              </p>
+                            )}
+                            <div className="flex justify-between items-center mt-2 pt-1 border-t border-slate-200/60">
+                              <span className="text-xs font-bold text-slate-800">
+                                Qty: {cItem.qty}
+                              </span>
+                              <span className="text-xs font-extrabold text-slate-900">
+                                ${cItem.totalPrice.toFixed(2)}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+
+                {/* Checkout Form */}
+                {cart.length > 0 && (
+                  <form onSubmit={handleCheckout} className="p-4 bg-slate-50 border-t border-slate-200 space-y-3">
+                    <div className="space-y-1 text-xs">
+                      <div className="flex justify-between text-slate-500">
+                        <span>Subtotal</span>
+                        <span>${cartSubtotal.toFixed(2)}</span>
+                      </div>
+                      <div className="flex justify-between text-slate-500">
+                        <span>Est. Taxes (9.5%)</span>
+                        <span>${taxAmount.toFixed(2)}</span>
+                      </div>
+                      <div className="flex justify-between font-extrabold text-sm text-slate-900 pt-1 border-t border-slate-200">
+                        <span>Total</span>
+                        <span>${cartTotal.toFixed(2)}</span>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2 pt-1">
+                      <div>
+                        <label className="block text-[10px] font-bold text-slate-600 mb-0.5">Your Name</label>
+                        <input
+                          type="text"
+                          name="customerName"
+                          required
+                          placeholder="Name"
+                          className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-1 focus:ring-teal-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] font-bold text-slate-600 mb-0.5">Phone #</label>
+                        <input
+                          type="tel"
+                          name="phone"
+                          required
+                          placeholder="Phone"
+                          className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-1 focus:ring-teal-500"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <label className="block text-[10px] font-bold text-slate-600 mb-0.5">Order Type</label>
+                        <select
+                          name="type"
+                          className="w-full text-xs px-2 py-1.5 rounded-lg border border-slate-300 bg-white focus:outline-none"
+                        >
+                          <option value="Pickup">Store Pickup</option>
+                          <option value="Dine-In">Dine-In Table</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-[10px] font-bold text-slate-600 mb-0.5">Special Request</label>
+                        <input
+                          type="text"
+                          name="notes"
+                          placeholder="Optional notes..."
+                          className="w-full text-xs px-2 py-1.5 rounded-lg border border-slate-300 focus:outline-none"
+                        />
+                      </div>
+                    </div>
+
+                    <button
+                      type="submit"
+                      className="w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white rounded-xl text-xs font-bold shadow-md transition-all text-center"
+                    >
+                      Confirm & Pay (${cartTotal.toFixed(2)})
+                    </button>
+                  </form>
+                )}
+
+              </div>
+            </div>
+          )}
+
+          {}
+          {orderSuccess && (
+            <div className="fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4">
+              <div className="bg-white w-full max-w-xs rounded-3xl p-5 text-center shadow-2xl border border-slate-100 animate-fade-in space-y-3">
+                <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto text-emerald-600">
+                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+
+                <div>
+                  <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider bg-emerald-50 px-2 py-0.5 rounded-full">
+                    Order Received!
+                  </span>
+                  <h3 className="text-xl font-extrabold text-slate-900 mt-1">
+                    {orderSuccess.id}
+                  </h3>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Thank you, <span className="font-bold text-slate-700">{orderSuccess.customerName}</span>! Kevin is preparing your handcrafted tea now.
+                  </p>
+                </div>
+
+                <div className="p-3 bg-slate-50 rounded-2xl text-left border border-slate-200 text-xs space-y-1">
+                  <div className="flex justify-between font-bold text-slate-800">
+                    <span>Estimated Prep Time:</span>
+                    <span className="text-teal-600">8 - 12 Mins</span>
+                  </div>
+                  <div className="flex justify-between text-slate-500 text-[11px]">
+                    <span>Total Paid:</span>
+                    <span>${orderSuccess.total.toFixed(2)}</span>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => setOrderSuccess(null)}
+                  className="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-colors"
+                >
+                  Back to Menu
+                </button>
+              </div>
+            </div>
+          )}
+
+          {}
+          {/* BOTTOM NAVIGATION BAR */}
+          <nav className="fixed bottom-0 left-0 right-0 z-20 bg-white/95 backdrop-blur-md border-t border-slate-200 shadow-lg">
+            <div className="max-w-md mx-auto grid grid-cols-5 py-2 px-1 text-center">
+              
+              <button
+                onClick={() => setActiveTab('home')}
+                className={`flex flex-col items-center py-1 rounded-xl transition-all ${
+                  activeTab === 'home' ? 'text-teal-600 font-extrabold scale-105' : 'text-slate-400 hover:text-slate-600 font-medium'
+                }`}
+              >
+                <svg className="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                </svg>
+                <span className="text-[10px]">Home</span>
+              </button>
+
+              <button
+                onClick={() => setActiveTab('menu')}
+                className={`flex flex-col items-center py-1 rounded-xl transition-all ${
+                  activeTab === 'menu' ? 'text-teal-600 font-extrabold scale-105' : 'text-slate-400 hover:text-slate-600 font-medium'
+                }`}
+              >
+                <svg className="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                </svg>
+                <span className="text-[10px]">Menu</span>
+              </button>
+
+              <button
+                onClick={() => setActiveTab('offers')}
+                className={`flex flex-col items-center py-1 rounded-xl transition-all ${
+                  activeTab === 'offers' ? 'text-pink-600 font-extrabold scale-105' : 'text-slate-400 hover:text-slate-600 font-medium'
+                }`}
+              >
+                <svg className="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
+                </svg>
+                <span className="text-[10px]">Offers</span>
+              </button>
+
+              <button
+                onClick={() => setActiveTab('feedback')}
+                className={`flex flex-col items-center py-1 rounded-xl transition-all ${
+                  activeTab === 'feedback' ? 'text-purple-600 font-extrabold scale-105' : 'text-slate-400 hover:text-slate-600 font-medium'
+                }`}
+              >
+                <svg className="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 10h.01M12 10h.01M16 10h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 4.418 9 8z" />
+                </svg>
+                <span className="text-[10px]">Reviews</span>
+              </button>
+
+              <button
+                onClick={() => setActiveTab('owner')}
+                className={`flex flex-col items-center py-1 rounded-xl transition-all ${
+                  activeTab === 'owner' ? 'text-indigo-600 font-extrabold scale-105' : 'text-slate-400 hover:text-slate-600 font-medium'
+                }`}
+              >
+                <svg className="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 002 2h2a2 2 0 002-2z" />
+                </svg>
+                <span className="text-[10px]">Owner</span>
+              </button>
+
+            </div>
+          </nav>
+
+        </div>
+      );
+    }
+
+    const { useState, useEffect } = React;
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
